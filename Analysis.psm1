@@ -1,33 +1,28 @@
-﻿Function Calculate-Size {
-    Param(
-        $Input
-    )
-    if ($Input.PSIsContainer) {
-        return $Input.Length
-    }
-    $Size = 0
-    foreach ($Item in Get-ChildItem -Recurse -Path $Input.FullName | Where-Object {$_.PSIsContainer -eq $False}) {
-        $Size += $Item.Length
-    }
-    return $Size
-}
+﻿
 
 Function Analyze_Result {
     Param(
-        $Result
+        $TestItem
     )
-    $InputSize = Calculate-Size $Result.Source
-    $OutputSize = $Result.Result.Length
 
-    $CompressionRatio = $InputSize / $OutputSize
-    $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
-    $BitsPerByte = $OutputSize * 8 / $InputSize
+    Write-Host $TestItem
 
-    $Result | Add-Member -MemberType NoteProperty -Name 'InputSize' -Value $InputSize
-    $Result | Add-Member -MemberType NoteProperty -Name 'OutputSize' -Value $OutputSize
-    $Result | Add-Member -MemberType NoteProperty -Name 'CompressionRatio' -Value $CompressionRatio
-    $Result | Add-Member -MemberType NoteProperty -Name 'PercentCompression' -Value $PercentCompression
-    $Result | Add-Member -MemberType NoteProperty -Name 'BitsPerByte' -Value $BitsPerByte
+    $CompressionRatio = $TestItem.InputSize / $TestItem.OutputSize
+    $PercentCompression = (1 - ($TestItem.OutputSize / $TestItem.InputSize)) * 100
+    $BitsPerByte = $TestItem.OutputSize * 8 / $TestItem.InputSize
+
+    $Result = New-Object -TypeName PSObject -Prop (@{
+        "Label"=$TestItem.Label;
+        "Executable"=$TestItem.Executable;
+        "Arguments"=$TestItem.Arguments
+        "Input"=$TestItem.Input;
+        "Output"=$TestItem.Output;
+        "InputSize"=$TestItem.InputSize;
+        "OutputSize"=$TestItem.OutputSize;
+        "CompressionRatio"=$CompressionRatio;
+        "PercentCompression"=$PercentCompression;
+        "BitsPerByte"=$BitsPerByte;
+    })
     return $Result
 }
 
