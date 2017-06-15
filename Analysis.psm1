@@ -28,13 +28,14 @@ Function Analyze_Result {
 Function Write_ResultsCSV {
     Param(
         $Results,
-        $Filename = 'CompressionResults.csv',
+        $Filename = 'CompressionResults',
         $SortByRatio = $true
     )
     $Results = $Results | Sort-Object @{Expression = "CompressionRatio"; Descending = $true}, @{Expression = "ExecutionTime"}
 
     $OutputPath = (Resolve-Path '.').Path + '\Results\' + $Filename
-    $Results | Export-Csv -Path $OutputPath -NoTypeInformation
+    $Results | Export-Csv -Path ($OutputPath + '.csv') -NoTypeInformation
+    $Results | ConvertTo-Json | Out-File ($OutputPath + '.json')
 }
 
 Export-ModuleMember *_*
