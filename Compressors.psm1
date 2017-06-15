@@ -30,7 +30,8 @@ Function Format-Result {
         $Result,
         $Label,
         $Executable,
-        $Arguments
+        $Arguments,
+        $ExecutionTime
     )
     $obj = New-Object -TypeName PSObject -Prop (@{
         "Label" = $Label;
@@ -39,10 +40,10 @@ Function Format-Result {
         "Input" = $Source.Name;
         "Output" = $Result.Name;
         "InputSize" = (Calculate-Size $Source);
-        "OutputSize"= $Result.Length;
+        "OutputSize" = $Result.Length;
+        "ExecutionTime" = $ExecutionTime.TotalMilliseconds
     })
 
-    Remove-Item $Result
 
     return $obj
 }
@@ -64,12 +65,18 @@ Function Compress-7z {
     $ArchiveMode = '-mm=' + $Mode
     $CompressionLevel = '-mx=' + $Level
     
-    $Arguments = "$ArchiveType $ArchiveMode $CompressionLevel"
+    $Arguments = "7z.exe a $ArchiveType $ArchiveMode $CompressionLevel"
     
-    $stdout = 7z a $Dest $ArchiveType $ArchiveMode $CompressionLevel $Target.FullName
+    Write-Host "Compressing $Label..."
+    $time = Measure-Command {7z a $ArchiveType $ArchiveMode $CompressionLevel $Dest $Target.FullName}
+
     $archive = Get-Item $Dest
 
-    return Format-Result $Target $archive $Label '7z' $Arguments
+    $Result = Format-Result $Target $archive $Label '7z' $Arguments $time
+    
+    Remove-Item $archive
+
+    return $Result
 }
 
 Function Compress_7z {
@@ -77,25 +84,30 @@ Function Compress_7z {
         $Target
     )
 
+    $Levels = [CompressionPreset].GetEnumValues()
+
     $Results = @()
+    
     foreach ($Mode in @('LZMA', 'LZMA2', 'Deflate', 'Deflate64', 'PPMd')) {
-        foreach ($Level in [CompressionPreset].GetEnumValues()) {
-           #$Results += Compress-7z $Target -Label "7z *.7z $Mode $($Level -As [CompressionPreset]) Preset" -Mode $Mode -Level $Level
+        foreach ($Level in $Levels) {
+           $Results += Compress-7z $Target -Label "7z 7z $Mode $($Level -As [CompressionPreset]) Preset" -Mode $Mode -Level $Level
         }
     }
-    foreach ($Mode in @('LZMA', 'LZMA2', 'Deflate', 'Deflate64', 'PPMd')) {
-        foreach ($Level in [CompressionPreset].GetEnumValues()) {
-            #$Results += Compress-7z $Target -Label "7z *.zip $Mode $($Level -As [CompressionPreset]) Preset" -Type 'Zip' -Mode $Mode -Level $Level
+
+    foreach ($Mode in @('LZMA', 'BZip2', 'Deflate', 'Deflate64', 'PPMd')) {
+        foreach ($Level in $Levels) {
+            $Results += Compress-7z $Target -Label "7z Zip $Mode $($Level -As [CompressionPreset]) Preset" -Type 'Zip' -Mode $Mode -Level $Level
         }
     }
-    foreach ($Level in [CompressionPreset].GetEnumValues()) {
-        $Results += Compress-7z $Target -Label "7z *.xz $($Level -As [CompressionPreset]) Preset" -Type 'xz' -Mode 'LZMA2' -Level $Level
-    }
+    
     if ($Target.PSIsContainer -eq $false) {
-        # Cannot compress folders directly into gzip or bz2
-        foreach ($Type in @('gzip', 'bzip2')) {
-            foreach ($Level in [CompressionPreset].GetEnumValues()) {
-                #$Results += Compress-7z $Target -Label "7z *.$Type $($Level -As [CompressionPreset]) Preset" -Type $Type -Mode 'deflate' -Level $Level
+        # Cannot compress folders directly into gzip, bzip2, or xz
+        foreach ($Level in $Levels) {
+            $Results += Compress-7z $Target -Label "7z Xz $($Level -As [CompressionPreset]) Preset" -Type 'Xz' -Mode 'LZMA2' -Level $Level
+        }
+        foreach ($Type in @('Gzip', 'Bzip2')) {
+            foreach ($Level in $Levels) {
+                $Results += Compress-7z $Target -Label "7z $Type $($Level -As [CompressionPreset]) Preset" -Type $Type -Mode 'deflate' -Level $Level
             }
         }
     }
