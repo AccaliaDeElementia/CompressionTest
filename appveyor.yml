@@ -5,4 +5,4 @@ install:
 build_script:
 - ps: ./Test.ps1
 artifacts:
-- path: Results\CompressionResults.csv
+- path: Results/CompressionResults.csv
