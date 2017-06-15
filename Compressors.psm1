@@ -1,13 +1,13 @@
 ﻿
 Function Calculate-Size {
     Param(
-        $Input
+        $Target
     )
-    if ($Input.PSIsContainer -eq $false) {
+    if ($Target.PSIsContainer -eq $false) {
         return $Input.Length
     }
     $Size = 0
-    foreach ($Item in Get-ChildItem -Recurse -Path $Input.FullName | Where-Object {$_.PSIsContainer -eq $false}) {
+    foreach ($Item in Get-ChildItem -Recurse -Path $Target.FullName | Where-Object {$_.PSIsContainer -eq $false}) {
         $Size += $Item.Length
     }
     return $Size
