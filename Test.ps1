@@ -2,10 +2,16 @@
 Import-Module -Force './Compressors.psm1'
 Import-Module -Force './Analysis.psm1'
 
-$Source = Get-Item -Path '.\Corpus\King James.txt'
-$Dest = Compress_7z $Source
-$Result = $Dest | Where-Object {$_ -ne $null} | %{Analyze_Result $_ $False}
+# Create end results Directory
 $ignored = New-Item -Type Directory Results -Force
+
+$Source = Get-Item -Path '.\Corpus\King James.txt'
+
+Write-Host "Performing Compression Test for $($Source.Name)"
+$Results = Test_7zCompression $Source | %{Analyze_Result $_}
+$Results += Test_WinRarCompression $Source | %{Analyze_Result $_}
 Write-Host "Analyzing Results..."
-Write_ResultsCSV $Result
+Write_ResultsCSV $Results
+
+
 Write-Host "Done"

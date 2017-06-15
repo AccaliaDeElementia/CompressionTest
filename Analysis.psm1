@@ -12,7 +12,7 @@ Function Analyze_Result {
     $Result = New-Object -TypeName PSObject -Property @{
         Label=$TestItem.Label;
         Executable=$TestItem.Executable;
-        Arguments=$TestItem.Arguments
+        Arguments="$($TestItem.Arguments)";
         Input=$TestItem.Input;
         Output=$TestItem.Output;
         InputSize=$TestItem.InputSize;

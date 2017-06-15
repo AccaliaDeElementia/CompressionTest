@@ -1,6 +1,6 @@
 ﻿$Assembly = Add-Type -AssemblyName System.Web
 
-Function New-RandomBinaryFile {
+Function New_RandomBinaryFile {
     Param(
         $FileSize = 4kb,
         $Path = (Resolve-Path '.').Path,
@@ -26,7 +26,7 @@ Function New-RandomBinaryFile {
     return $di
 }
 
-Function New-RandomTextFile {
+Function New_RandomTextFile {
     Param(
         $FileSize = 4kb,
         $Path = (Resolve-Path '.').Path,
@@ -53,3 +53,68 @@ Function New-RandomTextFile {
     $di = Get-ChildItem $path -Filter $FileName
     return $di
 }
+
+Function Calculate-Size {
+    Param(
+        $Target
+    )
+    if ($Target.PSIsContainer -eq $false) {
+        return $Target.Length
+    }
+    
+    $Size = 0
+    foreach ($Item in Get-ChildItem -Recurse -Path $Target.FullName | Where-Object {$_.PSIsContainer -eq $false}) {
+        $Size += $Item.Length
+    }
+    return $Size
+}
+
+Function Format-Result {
+    Param(
+        $Source,
+        $Result,
+        $Label,
+        $Executable,
+        $Arguments,
+        $ExecutionTime
+    )
+    $obj = New-Object -TypeName PSObject -Prop (@{
+        "Label" = ($Executable + ' ' + $Label);
+        "Executable" = $Executable;
+        "Arguments" = $Arguments;
+        "Input" = $Source.Name;
+        "Output" = $Result.Name;
+        "InputSize" = (Calculate-Size $Source);
+        "OutputSize" = $Result.Length;
+        "ExecutionTime" = $ExecutionTime.TotalMilliseconds
+    })
+
+
+    return $obj
+}
+
+Function Execute_Compression {
+    Param (
+        $CompressorSource,
+        $CompressorTarget,
+        $CompressorLabel,
+        $CompressorExecutable,
+        $CompressorArguments,
+        $CompressorCommand
+    )
+
+    Write-Host "Compressing $CompressorExecutable $CompressorLabel..."
+
+    $CompressorSource = Get-Item $CompressorSource;
+    $TimeInfo = Measure-Command $CompressorCommand
+    $CompressorTarget = Get-Item $CompressorTarget
+    
+    $Result = Format-Result $CompressorSource $CompressorTarget $CompressorLabel $CompressorExecutable $CompressorArguments $TimeInfo.TotalMilliseconds
+    
+    Remove-Item $CompressorTarget
+
+    return $Result
+}
+
+
+Export-ModuleMember *_*
