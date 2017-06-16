@@ -1,118 +1,64 @@
-﻿Import-Module './Utilities.psm1'
+﻿Import-Module "./Utilities.psm1"
 
-Add-Type -TypeDefinition @"
-   public enum CompressionPreset_7z
-   {
-      Fastest=1,
-      Fast=3,
-      Normal=5,
-      Maximum=7,
-      Ultra=9
-   }
-"@
-Add-Type -TypeDefinition @"
-   public enum CompressionPreset_WinRar
-   {
-      Fastest=1,
-      Fast=2,
-      Normal=3,
-      Maximum=4,
-      Ultra=5
-   }
-"@
-
-
-
-Function Compress-7z {
+Function New-Compressor {
     Param(
-        $Source,
-        [string]$Type = '7z',
-        [string]$Mode = 'LZMA',
-        [int]$Level = 9,
-        [string]$Label = 'Generic 7Zip Test'
+        $Label,
+        $Extension,
+        $Executable,
+        $Arguments,
+        $Command = $null,
+        $CanRecurse = $true,
+        $TargetFirst = $true
     )
-    $FileName = [guid]::NewGuid().Guid + '.' + $Type.ToLower()
-
-    $Path = (Resolve-Path '.').Path
-    $Target = $($Path + '\' + $FileName)
-    
-    $Executable = "7z.exe"
-    $Arguments = 'a', ('-t'+$Type), ('-mm='+ $Mode), ('-mx='+ $Level)
-    $Command = {7z @Arguments $Target $Source.FullName}
-
-    return Execute_Compression $Source $Target $Label $Executable $Arguments $Command
+    if ($Command -eq $null) {
+        if ($TargetFirst) {
+            $Command = {Param($_)  &$_.Executable @($_.Arguments) $_.Target $_.Source}
+        } else {
+            $Command = {Param($_)  &$_.Executable @($_.Arguments) $_.Source $_.Target}
+        }
+    }
+    return New-Object -TypeName PSObject -Property @{
+            Label = $Label
+            Extension = $Extension
+            Executable = $Executable
+            Arguments = $Arguments;
+            CanRecurse = $CanRecurse
+            Command = $Command
+        }
 }
 
 
-Function Compress-WinRar {
-    Param(
-        $Source,
-        [int]$Level = 9,
-        [string]$Label = 'Generic WinRar Test'
+
+Function Get_Compressors {
+    $Results = @(
+        (New-Compressor "Builtin Zip Compression" "zip" "Compress-Archive" @() {Param($_)  &$_.Executable $_.Source $_.Target}),
+        (New-Compressor "Builtin Cab Compression" "cab" "makecab" @() -TargetFirst $false -CanRecurse $False)
     )
-    $FileName = [guid]::NewGuid().Guid + '.rar'
-
-    $Path = (Resolve-Path '.').Path
-    $Target = $($Path + '\' + $FileName)
     
-    $Executable = "WinRar"
-    $Arguments = 'a', ('-m'+ $Level)
-    $Command = {&'C:\Program Files\WinRAR\Rar.exe' @Arguments $Target $Source.FullName}
-
-    return Execute_Compression $Source $Target $Label $Executable $Arguments $Command
-}
-
-Function Test_7zCompression {
-    Param(
-        $Target
-    )
-
-    $Levels = [CompressionPreset_7z].GetEnumValues()
-
-    $Results = @()
-    
-    foreach ($Mode in @('LZMA', 'LZMA2', 'Deflate', 'Deflate64', 'PPMd')) {
-        foreach ($Level in $Levels) {
-           $Results += Compress-7z $Target -Label "7z $Mode $($Level -As [CompressionPreset_7z]) Preset" -Mode $Mode -Level $Level
+    foreach ($Level in @((New_Pair "Fastest" 1),(New_Pair "Fast" 2),(New_Pair "Normal" 3),(New_Pair "Maximum" 4),(New_Pair "Ultra" 5))) {
+        $Results += New-Compressor "$($Level.First) Preset" "rar" "C:\Program Files\WinRAR\Rar.exe" @("a", "-m$($Level.Second)")
+    }
+    $SevenZLevels = @((New_Pair "Fastest" 1),(New_Pair "Fast" 3),(New_Pair "Normal" 5),(New_Pair "Maximum" 7),(New_Pair "Ultra" 9))
+    foreach ($Level in $SevenZLevels) {
+        foreach ($Mode in @("LZMA", "LZMA2", "Bzip2", "Deflate", "Deflate64", "PPMd")) {
+           $Results += New-Compressor "7z $Mode $($Level.First) Preset" "7z" "7z.exe" @("a", ("-t7z"), ("-mm="+$Mode), ("-mx="+$Level.Second))
+        }
+        foreach ($Mode in @("LZMA", "BZip2", "Deflate", "Deflate64", "PPMd")) {
+            $Results += New-Compressor "Zip $Mode $($Level.First) Preset" "Zip"  "7z.exe" @("a", "-tZip", "-mm=$Mode", "-mx=$($Level.Second)")
         }
     }
 
-    foreach ($Mode in @('LZMA', 'BZip2', 'Deflate', 'Deflate64', 'PPMd')) {
-        foreach ($Level in $Levels) {
-            $Results += Compress-7z $Target -Label "Zip $Mode $($Level -As [CompressionPreset_7z]) Preset" -Type 'Zip' -Mode $Mode -Level $Level
-        }
+    # These algotithms can only handle one file so exclude from directory tests
+    foreach ($Level in $SevenZLevels) {
+        $Results += New-Compressor "Xz $($Level.First) Preset" "Xz" "7z.exe" @("a", "-tXz","-mx=$($Level.Second)") -CanRecurse $false
     }
-    
-    if ($Target.PSIsContainer -eq $false) {
-        # Cannot compress folders directly into gzip, bzip2, or xz
-        foreach ($Level in $Levels) {
-            $Results += Compress-7z $Target -Label "Xz $($Level -As [CompressionPreset_7z]) Preset" -Type 'Xz' -Mode 'LZMA2' -Level $Level
-        }
-        foreach ($Type in @('Gzip', 'Bzip2')) {
-            foreach ($Level in $Levels) {
-                $Results += Compress-7z $Target -Label "$Type $($Level -As [CompressionPreset_7z]) Preset" -Type $Type -Mode 'deflate' -Level $Level
-            }
+    foreach ($Type in @("Gzip", "Bzip2")) {
+        foreach ($Level in $SevenZLevels) {
+            $Results += New-Compressor "$Type $($Level.First) Preset" $Type "7z.exe" @("a", "-t$Type", "-mx=$($Level.Second)") -CanRecurse $false
         }
     }
 
-    # Add the where filter to cover the case when a compression fails
-    return $Results | Where-Object {$_ -ne $null}
-}
-
-Function Test_WinRarCompression {
-Param(
-        $Target
-    )
-
-    $Levels = [CompressionPreset_WinRar].GetEnumValues()
-
-    $Results = @()
-
-    foreach ($Level in $Levels) {
-        $Results += Compress-WinRar $Target -Label "WinRar $($Level -As [CompressionPreset_WinRar]) Preset" -Level $Level
-    }
-    # Add the where filter to cover the case when a compression fails
-    return $Results | Where-Object {$_ -ne $null}
+    return $Results
 }
 
 Export-ModuleMember *_*

@@ -5,5 +5,7 @@ install:
 - ps: choco install --limit-output -y winrar
 build_script:
 - ps: ./Test.ps1
+after_build:
+    - ps: Get-ChildItem .\Results\* | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 artifacts:
-- path: Results/*
+    - path: Results

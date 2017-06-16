@@ -2,15 +2,14 @@
 
 Function New_RandomBinaryFile {
     Param(
+        $Target,
         $FileSize = 4kb,
-        $Path = (Resolve-Path '.').Path,
-        $FileName = [guid]::NewGuid().Guid + '.dat',
         $ChunkSize = 4kb
     )
     $chunks = [math]::Ceiling($FileSize / $ChunkSize)
     [io.FileStream]$file = $null
     try {
-        $file = [io.file]::OpenWrite($Path + '\' + $FileName)
+        $file = [io.file]::OpenWrite($Target)
         $random = New-Object System.Random
         for ($i = 0; $i -lt $chunks; $i += 1) {
             [Byte[]] $bytes = New-Object byte[] $ChunkSize
@@ -22,15 +21,14 @@ Function New_RandomBinaryFile {
             $file.Dispose();
         }
     }
-    $di = Get-ChildItem $path -Filter $FileName
+    $di = Get-Item $Target
     return $di
 }
 
 Function New_RandomTextFile {
     Param(
+        $Target,
         $FileSize = 4kb,
-        $Path = (Resolve-Path '.').Path,
-        $FileName = [guid]::NewGuid().Guid + '.dat',
         $ChunkSize = 128
     )
     $enc = [System.Text.Encoding]::UTF8
@@ -40,7 +38,7 @@ Function New_RandomTextFile {
     $chunks = [math]::Ceiling($FileSize / $ChunkSize)
     [io.FileStream]$file = $null
     try {
-        $file = [io.file]::OpenWrite($Path + '\' + $FileName)
+        $file = [io.file]::OpenWrite($Target)
         for ($i = 0; $i -lt $chunks; $i += 1) {
             $chunk = [System.Web.Security.Membership]::GeneratePassword($ChunkSize, 0)
             $file.Write($enc.GetBytes($chunk),0,$ChunkSize)
@@ -50,7 +48,7 @@ Function New_RandomTextFile {
             $file.Dispose();
         }
     }
-    $di = Get-ChildItem $path -Filter $FileName
+    $di = Get-Item $Target
     return $di
 }
 
@@ -79,7 +77,7 @@ Function Format-Result {
         $ExecutionTime
     )
     $obj = New-Object -TypeName PSObject -Prop (@{
-        "Label" = ($Executable + ' ' + $Label);
+        "Label" = $Label;
         "Executable" = $Executable;
         "Arguments" = $Arguments;
         "Input" = $Source.Name;
@@ -95,26 +93,41 @@ Function Format-Result {
 
 Function Execute_Compression {
     Param (
-        $CompressorSource,
-        $CompressorTarget,
-        $CompressorLabel,
-        $CompressorExecutable,
-        $CompressorArguments,
-        $CompressorCommand
+        $Source,
+        $TempDir,
+        $Compressor
     )
 
-    Write-Host "Compressing $CompressorExecutable $CompressorLabel..."
+    Write-Host "Compressing $($Compressor.Executable) $($Compressor.Label)..."
 
-    $CompressorSource = Get-Item $CompressorSource;
-    $TimeInfo = Measure-Command $CompressorCommand
-    $CompressorTarget = Get-Item $CompressorTarget
+    $Target = "$($TempDir.Fullname)\$([guid]::NewGuid().Guid).$($Compressor.Extension)" 
+
+    $Payload = New-Object -TypeName PSObject -Property @{
+        Source = $Source
+        Target = $Target
+        Executable = $Compressor.Executable
+        Arguments = $Compressor.Arguments
+        Extension = $Compressor.Extension
+        Label = $Compressor.Label
+    }
     
-    $Result = Format-Result $CompressorSource $CompressorTarget $CompressorLabel $CompressorExecutable $CompressorArguments $TimeInfo.TotalMilliseconds
+    $TimeInfo = Measure-Command {&$Compressor.Command $Payload}
+
+    $Target = Get-Item $Target
+
+    $Result = Format-Result $Source $Target $Compressor.Label $Compressor.Executable $Compressor.Arguments $TimeInfo
     
-    Remove-Item $CompressorTarget
+    Remove-Item $Target
 
     return $Result
 }
 
+
+Function New_Pair {
+    return New-Object -TypeName PSObject -Property @{
+        First = $Args[0]
+        Second = $Args[1]
+    }
+}
 
 Export-ModuleMember *_*
