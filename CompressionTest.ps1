@@ -53,8 +53,10 @@ Test-Source $Source $Compressors
 
 Write-Host "Fetching jQuery Source"
 $Source = New-Item -ItemType Directory "$TempDir/jquery"
-$TimeData = Measure-Command {git clone https://github.com/jquery/jquery.git $Source}
+$TimeData = Measure-Command {git clone https://github.com/jquery/jquery.git $Source 2>&1}
 Write-Host "Source fetched in $($TimeData.TotalSeconds)s"
+# Remove the .git folder as we're not testing that.
+$ignore = Remove-Item "$($Source.FullName)\.git" -Recurse -Force
 Test-Source $Source $Compressors
 
 Remove-Item -Recurse -Force $TempDir
