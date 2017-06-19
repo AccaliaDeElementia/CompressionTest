@@ -38,21 +38,16 @@ Function Get_Compressors {
     foreach ($Level in @((New_Pair "Fastest" 1),(New_Pair "Fast" 2),(New_Pair "Normal" 3),(New_Pair "Maximum" 4),(New_Pair "Ultra" 5))) {
         $Results += New-Compressor "$($Level.First) Preset" "rar" "C:\Program Files\WinRAR\Rar.exe" @("a", "-m$($Level.Second)")
     }
+
     $SevenZLevels = @((New_Pair "Fastest" 1),(New_Pair "Fast" 3),(New_Pair "Normal" 5),(New_Pair "Maximum" 7),(New_Pair "Ultra" 9))
-    foreach ($Level in $SevenZLevels) {
-        foreach ($Mode in @("LZMA", "LZMA2", "Bzip2", "Deflate", "Deflate64", "PPMd")) {
-           $Results += New-Compressor "7z $Mode $($Level.First) Preset" "7z" "7z.exe" @("a", ("-t7z"), ("-mm="+$Mode), ("-mx="+$Level.Second))
-        }
-        foreach ($Mode in @("LZMA", "BZip2", "Deflate", "Deflate64", "PPMd")) {
-            $Results += New-Compressor "Zip $Mode $($Level.First) Preset" "Zip"  "7z.exe" @("a", "-tZip", "-mm=$Mode", "-mx=$($Level.Second)")
+    foreach ($Type in @("Zip", "7z")) {
+        foreach ($Level in $SevenZLevels) {
+            $Results += New-Compressor "$Type $($Level.First) Preset" $Type "7z.exe" @("a", "-t$Type", "-mx=$($Level.Second)")
         }
     }
 
     # These algotithms can only handle one file so exclude from directory tests
-    foreach ($Level in $SevenZLevels) {
-        $Results += New-Compressor "Xz $($Level.First) Preset" "Xz" "7z.exe" @("a", "-tXz","-mx=$($Level.Second)") -CanRecurse $false
-    }
-    foreach ($Type in @("Gzip", "Bzip2")) {
+    foreach ($Type in @("Gzip", "Bzip2", "Xz")) {
         foreach ($Level in $SevenZLevels) {
             $Results += New-Compressor "$Type $($Level.First) Preset" $Type "7z.exe" @("a", "-t$Type", "-mx=$($Level.Second)") -CanRecurse $false
         }
