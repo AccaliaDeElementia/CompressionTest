@@ -1,64 +1,133 @@
-Import-Module ".\Compressors.psm1"
-Import-Module ".\Analysis.psm1"
 Import-Module ".\Utilities.psm1"
 
 
 # Create end results Directory
 $OutputDir = New-Item -Type Directory Results -Force
-$TempDir = New-Item -Type Directory Temp -Force
+$TempDir = New-Item -Type Directory "Temp_$([guid]::NewGuid().Guid)" -Force
 
-Function Test-Source {
+Function Calculate-Size {
     Param(
-        $Source,
-        $Compressors,
-        $Label = $Source.BaseName.Replace(' ', '_')
+        $Target
     )
+    if ($Target.PSIsContainer -eq $false) {
+        return $Target.Length
+    }
+    
+    $Size = 0
+    foreach ($Item in Get-ChildItem -Recurse -Path $Target.FullName | Where-Object {$_.PSIsContainer -eq $false}) {
+        $Size += $Item.Length
+    }
+    return $Size
+}
 
-    Write-Host "Performing Compression Test for $Label"
+Function Format-Result {
+    Param(
+        $CorpusConfig,
+        $CompressorConfig,
+        $Source,
+        $Target,
+        $ExecutionTime
+    )
+    $SourceItem = Get-Item $Source
+    $TargetItem = Get-Item $Target
+    $InputSize = (Calculate-Size $SourceItem)
+    $OutputSize = $TargetItem.Length
+    
+    $CompressionRatio = $InputSize / $OutputSize
+    $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
+    $BitsPerByte = 8 / $CompressionRatio
 
-    $Results = @()
-    foreach($Compressor in $Compressors) {
-        if ($Source.PSIsContainer -and -not $Compressor.CanRecurse) {
-            Continue
-        }
-        $Results += Execute_Compression $Source $TempDir $Compressor | %{Analyze_Result $_}
+    $Result = New-Object -TypeName PSObject -Property @{
+        Corpus = $CorpusConfig.Id;
+        Compressor = $CompressorConfig.Id;
+        Label = $CompressorConfig.Label;
+        Command = $CompressorConfig.Command;
+        Arguments = $CompressorConfig.Arguments;
+        InputSize = $InputSize;
+        OutputSize = $OutputSize;
+        ExecutionTime = $ExecutionTime.TotalMilliseconds
+        CompressionRatio = $CompressionRatio;
+        PercentCompression = $PercentCompression;
+        BitsPerByte = $BitsPerByte;
     }
 
-    Write-Host "Analyzing Results..."
-    Write_ResultsCSV $Results $OutputDir "Results_$Label"
+    return $Result
 }
 
 
+Function Run-CompressionSuite {
+    Param(
+        $CorpusConfig,
+        $CompressorsConfig
+    )
+    $ResultsArray = New-Object System.Collections.Generic.List[System.Object]
+
+    Write-Host "Collecting $($CorpusConfig.Label) Corpus..."
+    $TimeData = Measure-Command {$SourceItem = Invoke-Expression $CorpusConfig.Source}
+    Write-Host "$($CorpusConfig.Label) Corpus collected in $($TimeData.TotalSeconds)s"
+    Write-Host
+
+    Write-Host "Performing Compression Test for $($CorpusConfig.Label)"
+    foreach ($Compressor in $CompressorsConfig){
+        if ($SourceItem.PSIsContainer -and -not $Compressor.CanRecurse) {
+            Continue;
+        }
+        $Source = $SourceItem.FullName
+        $Target = "$($TempDir.Fullname)/$([guid]::NewGuid().Guid).$($Compressor.Extension)"
+        $Arguments = $Compressor.Arguments
+        $TimeData = Measure-Command {Invoke-Expression $Compressor.Command}
+        Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
+        $ResultsArray.add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
+    }
+    Write-Host
+    return $ResultsArray
+}
+
+Function Write_ResultsCSV {
+    Param(
+        $Results,
+        $OutputPath,
+        $Filename = 'CompressionResults'
+    )
+    $Destination = $OutputPath.FullName + "\$Filename.csv"
+    $Results | Sort-Object @{Expression = "CompressionRatio"; Descending = $true}, @{Expression = "ExecutionTime"} | Export-Csv -Path $Destination -NoTypeInformation
+ }
+ Function Write_ResultsJSON {
+    Param(
+        $Results,
+        $OutputPath,
+        $Filename = 'CompressionResults'
+    )
+    $Destination = $OutputPath.FullName + "\$Filename.json"
+    $Results | ConvertTo-Json -Depth 50 | Out-File $Destination
+ }
+
 $Compressors = Get_Compressors
 
-# Disable Individual Text File Tests. They took too long to run in CI and were not very valuable
-#$Sources = Get-Item -Path '.\Corpus\*.txt'
-#
-#foreach ($Source in $Sources) {
-#    Test-Source $Source $Compressors
-#}
+$Configuration = Get-Content .\configuration.json | ConvertFrom-Json
+$Results = New-Object -TypeName PSObject
+foreach ($testConfig in $Configuration.Corpuses) {
+    if ($testConfig.Enabled -ne 'true'){
+        Write-Host "Skipping Disabled $($testConfig.Label) Corpus..."
+        Write-Host
+        Continue
+    }
 
-$Source = Get-Item -Path './Corpus'
-Test-Source $Source $Compressors
+    $ResultsArray = Run-CompressionSuite $testConfig $Configuration.Compressors
+    Add-Member -InputObject $Results -NotePropertyName $testConfig.id -NotePropertyValue $ResultsArray
+    
+    Write_ResultsCSV $Result $OutputDir "Results_$($testConfig.Id)"
+    Write-Host
+}
 
-Write-Host "Generating 10MB of Random Binary Data..."
-$TimeData = Measure-Command {$Source = New_RandomBinaryFile "$TempDir/RandomBinary.dat" -FileSize 10mb}
-Write-Host "Generated in $($TimeData.TotalSeconds)s"
-Test-Source $Source $Compressors
 
-Write-Host "Generating 10MB of Random ASCII Data"
-$TimeData = Measure-Command {$Source = New_RandomTextFile "$TempDir/RandomASCII.dat" -FileSize 10mb}
-Write-Host "Generated in $($TimeData.TotalSeconds)s"
-Test-Source $Source $Compressors
 
-Write-Host "Fetching jQuery Source"
-$Source = New-Item -ItemType Directory "$TempDir/jquery"
-$TimeData = Measure-Command {git clone https://github.com/jquery/jquery.git $Source 2>&1}
-Write-Host "Source fetched in $($TimeData.TotalSeconds)s"
-# Remove the .git folder as we're not testing that.
-$ignore = Remove-Item "$($Source.FullName)\.git" -Recurse -Force
-Test-Source $Source $Compressors
+Write-Host "Writing Output JSON"
+Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
+Write_ResultsJSON $Configuration $OutputDir "TestResults"
+Write-Host
 
+Write-Host "Performing Cleanup"
 Remove-Item -Recurse -Force $TempDir
 
 Write-Host "Done"

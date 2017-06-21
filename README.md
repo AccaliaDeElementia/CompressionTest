@@ -32,7 +32,3 @@ This corpus is created as a single 10 megabyte file of pseudorandom ASCII data. 
 
 ### jQuery Corpus
 This corpus is composed of a fresh checkout of the current source code for the popular javascript library. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.
-
-<script type="text/javascript">
-    console.log('testing scripts in gh pages using markdown')
-</script>

@@ -1,10 +1,8 @@
-﻿Write-Host "Resetting Powershell modules"
+﻿Write-Host "Resetting Powershell Modules"
 Import-Module -Force './Utilities.psm1'
-Import-Module -Force './Compressors.psm1'
-Import-Module -Force './Analysis.psm1'
 
 # Create end results Directory
-$TempDir = New-Item -Type Directory Temp -Force
-Remove-Item -Recurse $TempDir
+Write-Host "Resetting Temporary Directories"
+Remove-Item -Recurse -Force ./Temp_*
 
 Write-Host "Done"

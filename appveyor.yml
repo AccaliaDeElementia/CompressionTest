@@ -7,5 +7,3 @@ build_script:
 - ps: ./CompressionTest.ps1
 after_build:
     - ps: Get-ChildItem .\Results\* | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-artifacts:
-    - path: Results
