@@ -1,73 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title>Compression Tests</title>
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js" integrity="sha384-qFIkRsVO/J5orlMvxK1sgAt2FXT67og+NyFTITYzvbIP1IJavVEKZM7YWczXkwpB" crossorigin="anonymous"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
-        <![endif]-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    </head>
-    <body>
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Compression Tests</a>
-                </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a class="nav-link" href="https://github.com/AccaliaDeElementia/CompressionTest" target="_blank">View on GitHub <img src="https://accaliadeelementia.github.io/CompressionTest/assets/images/blacktocat.png" /></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="container">
-            <h1>CompressionTest</h1>
-            <h5>Let's test some compression utilities!</h5>
-            <ul class="nav nav-tabs">
-                <li role="presentation" class="nav-item active">
-                    <a class="nav-link active" data-toggle="tab" href="#tab-rationale">Rationale</a>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Compression Tests</title>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"
+            integrity="sha384-qFIkRsVO/J5orlMvxK1sgAt2FXT67og+NyFTITYzvbIP1IJavVEKZM7YWczXkwpB"
+            crossorigin="anonymous"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"
+            integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo"
+            crossorigin="anonymous"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"
+            integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+            crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Compression Tests</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="nav-link" href="https://github.com/AccaliaDeElementia/CompressionTest" target="_blank">View
+                        on GitHub <img
+                                src="https://accaliadeelementia.github.io/CompressionTest/assets/images/blacktocat.png"/></a>
                 </li>
             </ul>
-            <div class="tab-content">
-                <div class="tab-pane fade active in" id="tab-rationale">
-                    <h2>Rationale</h2>
-                    <p>It is a perennial argument on the internet, just what is the best compressor to use to losslessly compress data, Yet no one tries to actually test the utilities against multiple types of input data. So I decided to do just that. </p>
-                    <p>These compression tests are performed using PowerShell to script the tests and are automatically run using appveyor, allowing new utilities or test corpuses to be tested and reported automatically.</p>
-                </div>
-            </div>
         </div>
-        <script type="text/Javascript">
-            'use strict';
-            function Compression_Results_Loaded(results) {
-                var tabList = $('ul.nav-tabs');
-                var tabContainer = $('div.tab-content');
+    </div>
+</nav>
+<div class="container">
+    <h1>CompressionTest</h1>
+    <h5>Let's test some compression utilities!</h5>
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="nav-item active">
+            <a class="nav-link active" data-toggle="tab" href="#tab-rationale">Rationale</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade active in" id="tab-rationale">
+            <h2>Rationale</h2>
+            <p>It is a perennial argument on the internet, just what is the best compressor to use to losslessly
+                compress data, Yet no one tries to actually test the utilities against multiple types of input data. So
+                I decided to do just that. </p>
+            <p>These compression tests are performed using PowerShell to script the tests and are automatically run
+                using appveyor, allowing new utilities or test corpuses to be tested and reported automatically.</p>
+        </div>
+    </div>
+</div>
+<script type="text/Javascript">
+    'use strict';
+    function Compression_Results_Loaded(results) {
+        console.log('loaded!')
+        var tabList = $('ul.nav-tabs');
+        var tabContainer = $('div.tab-content');
 
-                // Output the Test Corpus Tab
-
+        // Output the Test Corpus Tab
+        tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpuses">Test Corpuses</a></li>');
+        var content = ['<h2>Test Corpuses</h2>', '<p>To perform the tests several different test corpuses are required to stress the utilities in different ways. The following are the test corpuses used in these tests</p>'];
+        results.Corpuses.forEach(function (corpus) {
+            content.push('<h3>' + corpus.Label + '</h3>');
+            corpus.Description.split('\n').forEach(function (line) {
+                content.push("<p>" + line + "</p>");
+            })
+            if (corpus.SourceLinks) {
+                content.push("<p>The following is a list of sources used for this test corpus:</p>")
+                content.push('<ol>')
+                corpus.SourceLinks.forEach(function (source) {
+                    content.push("<li><a href=\"" + source.Link + "\">" + source.Label + "</a>")
+                });
+                content.push('</ol>')
             }
-        </script>
-        <!-- Unfortunately CORS prevents retrieving the data via AJAX, so we'll load it as the last thing we do -->
-        <script type="text/javascript" src="https://ci.appveyor.com/api/projects/AccaliaDeElementia/CompressionTest/artifacts/TestResults.jsonp?pr=false&branch=feat-website"></script>
-    </body>
+        });
+        tabContainer.append('<div class="tab-pane fade" id="tab-corpuses">' + content.join('\n') + '</div>');
+
+
+        // Create Result Tabs
+        results.Corpuses.forEach(function (corpus) {
+            tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpus-'+corpus.Id+'">'+corpus.Label+'</a></li>');
+            var content = ['<div class="tab-pane fade" id="tab-corpus-'+corpus.Id+'">',
+                '<h2>'+corpus.Label+'</h2>'];
+            var corpusResults =  results.Results[corpus.Id]
+            content.push('<table class="table">');
+            content.push('<tr><th>Position</th><th>Compressor</th><th>Switches</th><th>Percent Compression</th><th>Compression Ratio</th><th>Bits Per Byte</th></tr>')
+            var i = 1;
+            corpusResults.forEach(function(result) {
+                content.push('<tr><th>'+i+'</th><th>'+result.Compressor+'</th><th>'+result.Arguments+'</th><th>'+result.PercentCompression+'</th><th>'+result.CompressionRatio+'</th><th>'+result.BitsPerByte+'</th></tr>')
+                i += 1;
+            });
+            content.push('</table>');
+            content.push('</div>');
+            tabContainer.append(content.join('\n'));
+        })
+    }
+</script>
+<!-- Unfortunately CORS prevents retrieving the data via AJAX, so we'll load it as the last thing we do -->
+<script type="text/javascript"
+        src="https://ci.appveyor.com/api/projects/AccaliaDeElementia/CompressionTest/artifacts/TestResults.jsonp?pr=false&branch=feat-website"></script>
+</body>
 </html>
