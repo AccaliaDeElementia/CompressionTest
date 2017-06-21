@@ -5,23 +5,23 @@ Import-Module ".\Utilities.psm1"
 $OutputDir = New-Item -Type Directory Results -Force
 $TempDir = New-Item -Type Directory "Temp_$([guid]::NewGuid().Guid)" -Force
 
-Function Calculate-Size {
-    Param(
+function Calculate-Size {
+    param(
         $Target
     )
     if ($Target.PSIsContainer -eq $false) {
         return $Target.Length
     }
-    
+
     $Size = 0
-    foreach ($Item in Get-ChildItem -Recurse -Path $Target.FullName | Where-Object {$_.PSIsContainer -eq $false}) {
+    foreach ($Item in Get-ChildItem -Recurse -Path $Target.FullName | Where-Object { $_.PSIsContainer -eq $false }) {
         $Size += $Item.Length
     }
     return $Size
 }
 
-Function Format-Result {
-    Param(
+function Format-Result {
+    param(
         $CorpusConfig,
         $CompressorConfig,
         $Source,
@@ -32,7 +32,7 @@ Function Format-Result {
     $TargetItem = Get-Item $Target
     $InputSize = (Calculate-Size $SourceItem)
     $OutputSize = $TargetItem.Length
-    
+
     $CompressionRatio = $InputSize / $OutputSize
     $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
     $BitsPerByte = 8 / $CompressionRatio
@@ -55,66 +55,66 @@ Function Format-Result {
 }
 
 
-Function Run-CompressionSuite {
-    Param(
+function Run-CompressionSuite {
+    param(
         $CorpusConfig,
         $CompressorsConfig
     )
     $ResultsArray = New-Object System.Collections.Generic.List[System.Object]
 
     Write-Host "Collecting $($CorpusConfig.Label) Corpus..."
-    $TimeData = Measure-Command {$SourceItem = Invoke-Expression $CorpusConfig.Source}
+    $TimeData = Measure-Command { $SourceItem = Invoke-Expression $CorpusConfig.Source }
     Write-Host "$($CorpusConfig.Label) Corpus collected in $($TimeData.TotalSeconds)s"
     Write-Host
 
     Write-Host "Performing Compression Test for $($CorpusConfig.Label)"
-    foreach ($Compressor in $CompressorsConfig){
+    foreach ($Compressor in $CompressorsConfig) {
         if ($SourceItem.PSIsContainer -and -not $Compressor.CanRecurse) {
-            Continue;
+            continue;
         }
         $Source = $SourceItem.FullName
         $Target = "$($TempDir.Fullname)/$([guid]::NewGuid().Guid).$($Compressor.Extension)"
         $Arguments = $Compressor.Arguments
-        $TimeData = Measure-Command {Invoke-Expression $Compressor.Command}
+        $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
-        $ResultsArray.add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
+        $ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
     }
     Write-Host
     return $ResultsArray
 }
 
-Function Write_ResultsCSV {
-    Param(
+function Write_ResultsCSV {
+    param(
         $Results,
         $OutputPath,
         $Filename = 'CompressionResults'
     )
     $Destination = $OutputPath.FullName + "\$Filename.csv"
-    $Results | Sort-Object @{Expression = "CompressionRatio"; Descending = $true}, @{Expression = "ExecutionTime"} | Export-Csv -Path $Destination -NoTypeInformation
- }
- Function Write_ResultsJSON {
-    Param(
+    $Results | Sort-Object @{ Expression = "CompressionRatio"; Descending = $true },@{ Expression = "ExecutionTime" } | Export-Csv -Path $Destination -NoTypeInformation
+}
+function Write_ResultsJSON {
+    param(
         $Results,
         $OutputPath,
         $Filename = 'CompressionResults'
     )
     $Destination = $OutputPath.FullName + "\$Filename.json"
     $Results | ConvertTo-Json -Depth 50 | Out-File $Destination
- }
+}
 
 $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
 $Results = New-Object -TypeName PSObject
 foreach ($testConfig in $Configuration.Corpuses) {
-    if ($testConfig.Enabled -ne 'true'){
+    if ($testConfig.Enabled -ne 'true') {
         Write-Host "Skipping Disabled $($testConfig.Label) Corpus..."
         Write-Host
-        Continue
+        continue
     }
 
     $ResultsArray = Run-CompressionSuite $testConfig $Configuration.Compressors
-    Add-Member -InputObject $Results -NotePropertyName $testConfig.id -NotePropertyValue $ResultsArray
-    
-    Write_ResultsCSV $Result $OutputDir "Results_$($testConfig.Id)"
+    Add-Member -InputObject $Results -NotePropertyName $testConfig.Id -NotePropertyValue $ResultsArray
+
+    Write_ResultsCSV $ResultsArray $OutputDir "Results_$($testConfig.Id)"
     Write-Host
 }
 
@@ -128,4 +128,4 @@ Write-Host
 Write-Host "Performing Cleanup"
 Remove-Item -Recurse -Force $TempDir
 
-Write-Host "Done"
+Write-Host "Done" 

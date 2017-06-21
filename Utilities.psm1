@@ -1,7 +1,7 @@
 ﻿$Assembly = Add-Type -AssemblyName System.Web
 
-Function New_RandomBinaryFile {
-    Param(
+function New_RandomBinaryFile {
+    param(
         $Target,
         $FileSize = 4kb,
         $ChunkSize = 4kb
@@ -12,7 +12,7 @@ Function New_RandomBinaryFile {
         $file = [io.file]::OpenWrite($Target)
         $random = New-Object System.Random
         for ($i = 0; $i -lt $chunks; $i += 1) {
-            [Byte[]] $bytes = New-Object byte[] $ChunkSize
+            [byte[]]$bytes = New-Object byte[] $ChunkSize
             $random.NextBytes($bytes)
             $file.Write($bytes,0,$ChunkSize)
         }
@@ -25,8 +25,8 @@ Function New_RandomBinaryFile {
     return $di
 }
 
-Function New_RandomTextFile {
-    Param(
+function New_RandomTextFile {
+    param(
         $Target,
         $FileSize = 4kb,
         $ChunkSize = 128
@@ -40,7 +40,7 @@ Function New_RandomTextFile {
     try {
         $file = [io.file]::OpenWrite($Target)
         for ($i = 0; $i -lt $chunks; $i += 1) {
-            $chunk = [System.Web.Security.Membership]::GeneratePassword($ChunkSize, 0)
+            $chunk = [System.Web.Security.Membership]::GeneratePassword($ChunkSize,0)
             $file.Write($enc.GetBytes($chunk),0,$ChunkSize)
         }
     } finally {
@@ -52,4 +52,4 @@ Function New_RandomTextFile {
     return $di
 }
 
-Export-ModuleMember *_*
+Export-ModuleMember *_* 
