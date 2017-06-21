@@ -1,0 +1,168 @@
+{
+   "Corpuses":[
+      {
+         "Id":"EnglishText",
+         "Enabled":true,
+         "Label":"English Text",
+         "Description":"This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of approximately 10 megabytes that incorporates several dramatically different writing styles.",
+         "Source":"Get-Item -Path ./Corpus",
+         "SourceLinks":[
+            {
+               "Label":"The King James Bible",
+               "Link":"http://www.gutenberg.org/ebooks/10"
+            },
+            {
+               "Label":"The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell",
+               "Link":"http://www.gutenberg.org/ebooks/2800"
+            },
+            {
+               "Label":"The Adventures of Tom Sawyer by Mark Twain",
+               "Link":"https://www.gutenberg.org/ebooks/74"
+            },
+            {
+               "Label":"Pride and Prejudice by Jane Austin",
+               "Link":"https://www.gutenberg.org/ebooks/1342"
+            },
+            {
+               "Label":"Dracula by Bram Stoker",
+               "Link":"https://www.gutenberg.org/ebooks/345"
+            },
+            {
+               "Label":"War and Peace by graf Leo Tolstoy",
+               "Link":"https://www.gutenberg.org/ebooks/2600"
+            },
+            {
+               "Label":"Beowulf",
+               "Link":"https://www.gutenberg.org/ebooks/16328"
+            },
+            {
+               "Label":"Metamorphosis by Franz Kafka",
+               "Link":"https://www.gutenberg.org/ebooks/5200"
+            }
+         ]
+      },
+      {
+         "Id":"RandomBinary",
+         "Enabled":true,
+         "Label":"Random Binary Data",
+         "Description":"This corpus is created as a single 10 megabyte file of pseudorandom binary data. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
+         "Source":"New_RandomBinaryFile \"$TempDir/RandomBinary.dat\" -FileSize 10mb",
+         "SourceLinks":[
+
+         ]
+      },
+      {
+         "Id":"RandomText",
+         "Enabled":true,
+         "Label":"Random ASCII Text",
+         "Description":"This corpus is created as a single 10 megabyte file of pseudorandom ASCII text. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
+         "Source":"New_RandomTextFile \"$TempDir/RandomTextBinary.dat\" -FileSize 10mb",
+         "SourceLinks":[
+
+         ]
+      },
+      {
+         "Id":"jquery",
+         "Enabled":true,
+         "Label":"jQuery",
+         "Description":"This corpus is composed of current source code for the popular javascript library jQuery. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.",
+         "Source":"$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\"; git clone https://github.com/jquery/jquery.git $Source 2>$null; $_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force; return $Source;",
+         "SourceLinks":[
+
+         ]
+      }
+   ],
+   "Compressors":[
+      {
+         "Id":"Compress-Archive",
+         "Enabled":true,
+         "Label":"Compress-Archive cmdlet",
+         "Extension":"zip",
+         "Arguments":[
+
+         ],
+         "Command":"Compress-Archive $Source $Target",
+         "CanRecurse":true
+      },
+      {
+         "Id":"7zMaximumCompressionCom",
+         "Enabled":true,
+         "Label":"7zip MaximumCompression.com Best Switches",
+         "Extension":"7z",
+         "Arguments":[
+            "-m0=ppmd:o=20:mem=26"
+         ],
+         "Command":"7z.exe a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"7zExtreme",
+         "Enabled":true,
+         "Label":"7zip Extreme Preset",
+         "Extension":"7z",
+         "Arguments":[
+            "-mx=9"
+         ],
+         "Command":"7z.exe a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"7zMaximum",
+         "Enabled":true,
+         "Label":"7zip Maximum Preset",
+         "Extension":"7z",
+         "Arguments":[
+            "-mx=7"
+         ],
+         "Command":"7z.exe a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"WinRARMaximumCompressionCom",
+         "Enabled":true,
+         "Label":"WinRAR MaximumCompression.com Best Switches",
+         "Extension":"rar",
+         "Arguments":[
+            "-ep",
+            "-m5",
+            "-mdA",
+            "-mc24:256T+"
+         ],
+         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"WinRARMaximum",
+         "Enabled":true,
+         "Label":"WinRAR Maximum Preset",
+         "Extension":"rar",
+         "Arguments":[
+            "-m4"
+         ],
+         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"WinRARExtreme",
+         "Enabled":true,
+         "Label":"WinRAR Extreme Preset",
+         "Extension":"rar",
+         "Arguments":[
+            "-m5"
+         ],
+         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
+         "CanRecurse":true
+      },
+      {
+         "Id":"PosixBzipMaximum",
+         "Enabled":true,
+         "Label":"Posix BZip Maximum",
+         "Extension":"tar.bz2",
+         "Arguments":[
+            "-9"
+         ],
+         "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target",
+         "CanRecurse":true
+      }
+   ]
+}

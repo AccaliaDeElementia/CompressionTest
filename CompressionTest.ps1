@@ -102,8 +102,6 @@ Function Write_ResultsCSV {
     $Results | ConvertTo-Json -Depth 50 | Out-File $Destination
  }
 
-$Compressors = Get_Compressors
-
 $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
 $Results = New-Object -TypeName PSObject
 foreach ($testConfig in $Configuration.Corpuses) {
