@@ -100,23 +100,25 @@ function Write_ResultsJSON {
     $Destination = $OutputPath.FullName + "\$Filename"
     $ResultsText = $Results | ConvertTo-Json -Depth 50
     $ResultsText | Out-File "$Destination.json"
-    $ResultsText | Out-File "$Destination.txt"
-    "FUCK_CORS($ResultsText)" | Out-File "$Destination.jsonp"
+    "Compression_Results_Loaded($ResultsText)" | Out-File "$Destination.jsonp"
 }
 
 $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
 $Results = New-Object -TypeName PSObject
-foreach ($testConfig in $Configuration.Corpuses) {
-    if ($testConfig.Enabled -ne 'true') {
-        Write-Host "Skipping Disabled $($testConfig.Label) Corpus..."
+foreach ($CorpusConfig in $Configuration.Corpuses) {
+    if ($CorpusConfig.Enabled -ne 'true') {
+        Write-Host "Skipping Disabled $($CorpusConfig.Label) Corpus..."
         Write-Host
         continue
     }
 
-    $ResultsArray = Run-CompressionSuite $testConfig $Configuration.Compressors
-    Add-Member -InputObject $Results -NotePropertyName $testConfig.Id -NotePropertyValue $ResultsArray
+    $Result = Run-CompressionSuite $CorpusConfig $Configuration.Compressors
+    Add-Member -InputObject $Results -NotePropertyName $CorpusConfig.Id -NotePropertyValue $Result
 
-    Write_ResultsCSV $ResultsArray $OutputDir "Results_$($testConfig.Id)"
+    Write-Host
+    Write-Host "Writing Results CSV for $($CorpusConfig.Label)"
+    Write_ResultsCSV $Result $OutputDir "Results_$($CorpusConfig.Id)"
+
     Write-Host
 }
 
