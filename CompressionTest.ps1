@@ -1,6 +1,5 @@
 Import-Module ".\Utilities.psm1"
 
-
 # Create end results Directory
 $OutputDir = New-Item -Type Directory Results -Force
 $TempDir = New-Item -Type Directory "Temp_$([guid]::NewGuid().Guid)" -Force
@@ -98,8 +97,11 @@ function Write_ResultsJSON {
         $OutputPath,
         $Filename = 'CompressionResults'
     )
-    $Destination = $OutputPath.FullName + "\$Filename.json"
-    $Results | ConvertTo-Json -Depth 50 | Out-File $Destination
+    $Destination = $OutputPath.FullName + "\$Filename"
+    $ResultsText = $Results | ConvertTo-Json -Depth 50
+    $ResultsText | Out-File "$Destination.json"
+    $ResultsText | Out-File "$Destination.txt"
+    "FUCK_CORS($ResultsText)" | Out-File "$Destination.jsonp"
 }
 
 $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
@@ -117,8 +119,6 @@ foreach ($testConfig in $Configuration.Corpuses) {
     Write_ResultsCSV $ResultsArray $OutputDir "Results_$($testConfig.Id)"
     Write-Host
 }
-
-
 
 Write-Host "Writing Output JSON"
 Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
