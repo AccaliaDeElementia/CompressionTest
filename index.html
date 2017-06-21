@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Compression Tests</title>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js" integrity="sha384-qFIkRsVO/J5orlMvxK1sgAt2FXT67og+NyFTITYzvbIP1IJavVEKZM7YWczXkwpB" crossorigin="anonymous"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
+    <![endif]-->
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Compression Tests</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a class="nav-link" href="https://github.com/AccaliaDeElementia/CompressionTest" target="_blank">View on GitHub <img src="https://accaliadeelementia.github.io/CompressionTest/assets/images/blacktocat.png" /></a>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+    <div class="container">
+    <h1>CompressionTest</h1>
+<h5>Let's test some compression utilities!</h5>
+
+<ul class="nav nav-tabs">
+  <li role="presentation" class="nav-item active">
+    <a class="nav-link active" data-toggle="tab" href="#rationale">Rationale</a>
+  </li>
+  <li role="presentation" class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#corpus">Test Corpuses</a>
+  </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active in" id="rationale">
+    <h2>Rationale</h2>
+
+<p>It is a perennial argument on the internet, just what is the best compressor to use to losslessly compress data, Yet no one tries to actually test the utilities against multiple types of input data. So I decided to do just that. </p>
+
+<p>These compression tests are performed using PowerShell to script the tests and are automatically run using appveyor, allowing new utilities or test corpuses to be tested and reported automatically.</p>
+  </div>
+  <div class="tab-pane fade" id="corpus">
+    <h2>Test Corpuses</h2>
+<p>To perform the tests several different test corpuses are required to stress the utilities in different ways. The following are the test corpuses used in these tests
+
+<h3>English Text Corpus</h3>
+<p>This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of approximately 10 megabytes that incorporates several dramatically different writing styles.</p>
+
+<p>The following is a list of books used for these tests:
+<ul>
+<li><a href="http://www.gutenberg.org/ebooks/10" target="_blank">The King James Bible</a></li>
+<li><a href="http://www.gutenberg.org/ebooks/2800" target="_blank">The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/74" target="_blank">The Adventures of Tom Sawyer by Mark Twain</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/1342" target="_blank">Pride and Prejudice by Jane Austin</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/345" target="_blank">Dracula by Bram Stoker</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/2600" target="_blank">War and Peace by graf Leo Tolstoy</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/16328" target="_blank">Beowulf</a></li>
+<li><a href="https://www.gutenberg.org/ebooks/5200" target="_blank">Metamorphosis by Franz Kafka</a></li>
+</ul>
+</p>
+<h3>Random Binary Data Corpus</h3>
+<p>This corpus is created as a single 10 megabyte file of pseudorandom binary data. This test was created to test the compression utilities in a "worst case" scenario of compressing completely random data.</p>
+
+<h3>Random ASCII Data Corpus</h3>
+<p>This corpus is created as a single 10 megabyte file of pseudorandom ASCII data. This test was created to test the compression utilities in a "worst case" scenario of compressing completely random data.</p>
+
+<h3>jQuery Corpus</h3>
+<p>This corpus is composed of a fresh checkout of the current source code for the popular javascript library. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.</p>
+
+  </div>
+</div>
+    </div>
+
+
+    
+    
+    
+  </body>
+</html>
