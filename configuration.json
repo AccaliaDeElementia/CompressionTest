@@ -155,13 +155,13 @@
       "Label":"Posix based compressors provided by the cygwin project",
       "SourceLink":"https://www.cygwin.com/",
       "Extension":"tar.bz2",
-      "Tests"[{
+      "Tests":[{
              "Id":"PosixGzipMaximum",
              "Label":"Posix GZip Maximum",
              "Arguments":[
                 "-9"
              ],
-             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/gzip.exe\" @($Arguments) | Out-File $Target",
+             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/gzip.exe\" @($Arguments) | Out-File $Target"
           },
           {
              "Id":"PosixBzipMaximum",
@@ -169,7 +169,7 @@
              "Arguments":[
                 "-9"
              ],
-             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target",
+             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target"
           }
       ]},
       {
