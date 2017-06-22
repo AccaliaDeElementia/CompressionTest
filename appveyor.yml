@@ -1,8 +1,7 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 install:
-- ps: choco install --limit-output -y 7zip
-- ps: choco install --limit-output -y winrar
+- ps: choco install --limit-output --no-progress -y 7zip winrar
 build_script:
 - ps: ./CompressionTest.ps1
 after_build:

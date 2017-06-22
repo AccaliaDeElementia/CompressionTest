@@ -75,106 +75,107 @@
    "Compressors":[
       {
          "Id":"Compress-Archive",
-         "Enabled":true,
+         "Enabled":false,
          "Label":"Compress-Archive cmdlet",
+         "Description":"The <pre>Compress-Archive</pre> cmdlet uses the built in Windows zip compressor that is also used by Explorer when sending selections to compressed folders.",
+         "Documentation":"https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.archive/compress-archive",
          "Extension":"zip",
          "Arguments":[
 
          ],
-         "Command":"Compress-Archive $Source $Target",
-         "CanRecurse":true
+         "Command":"Compress-Archive $Source $Target"
       },
       {
-         "Id":"7zMaximumCompressionCom",
-         "Enabled":true,
-         "Label":"7zip MaximumCompression.com Best Switches",
-         "Extension":"7z",
-         "Arguments":[
-            "-m0=ppmd:o=20:mem=26"
-         ],
-         "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.7-zip.org/"
+        "Id":"7Zip",
+        "Description":"7Zip is a popular open-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
+        "Documentation":"https://sevenzip.osdn.jp/chm/cmdline/",
+        "Extension":"7z",
+        "SourceLink":"http://www.7-zip.org/",
+        "Command":"7z.exe a @($Arguments) $Target $Source",
+        "Tests":[{
+                 "Id":"7zMaximumCompressionCom",
+                 "Label":"7zip MaximumCompression.com Best Switches",
+                 "Arguments":[
+                    "-m0=ppmd:o=20:mem=26"
+                 ]
+              },
+              {
+                 "Id":"7zExtreme",
+                 "Label":"7zip Extreme Preset",
+                 "Arguments":[
+                    "-mx=9"
+                 ]
+              },
+              {
+                 "Id":"7zMaximum",
+                 "Label":"7zip Maximum Preset",
+                 "Arguments":[
+                    "-mx=7"
+                 ]
+              }
+          ]
       },
       {
-         "Id":"7zExtreme",
-         "Enabled":true,
-         "Label":"7zip Extreme Preset",
-         "Extension":"7z",
-         "Arguments":[
-            "-mx=9"
-         ],
-         "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.7-zip.org/"
+        "Id":"WinRAR",
+        "Label":"WinRAR",
+        "Extension":"rar",
+        "Description":"WinRar is a popular closed-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
+        "Documentation":"http://acritum.com/software/manuals/winrar/",
+        "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
+        "SourceLink":"http://www.rarlab.com/",
+        "Tests":[
+            {
+                 "Id":"WinRARMaximumCompressionCom",
+                 "Label":"WinRAR MaximumCompression.com Best Switches",
+                 "Arguments":[
+                    "-ep",
+                    "-m5",
+                    "-mdA",
+                    "-mc24:256T+"
+                 ]
+              },
+              {
+                 "Id":"WinRARMaximum",
+                 "Label":"WinRAR Maximum Preset",
+                 "Arguments":[
+                    "-m4"
+                 ]
+              },
+              {
+                 "Id":"WinRARExtreme",
+                 "Label":"WinRAR Extreme Preset",
+                 "Arguments":[
+                    "-m5"
+                 ]
+              }
+          ]
       },
       {
-         "Id":"7zMaximum",
-         "Enabled":true,
-         "Label":"7zip Maximum Preset",
-         "Extension":"7z",
-         "Arguments":[
-            "-mx=7"
-         ],
-         "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.7-zip.org/"
-      },
-      {
-         "Id":"WinRARMaximumCompressionCom",
-         "Enabled":true,
-         "Label":"WinRAR MaximumCompression.com Best Switches",
-         "Extension":"rar",
-         "Arguments":[
-            "-ep",
-            "-m5",
-            "-mdA",
-            "-mc24:256T+"
-         ],
-         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.rarlab.com/"
-      },
-      {
-         "Id":"WinRARMaximum",
-         "Enabled":true,
-         "Label":"WinRAR Maximum Preset",
-         "Extension":"rar",
-         "Arguments":[
-            "-m4"
-         ],
-         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.rarlab.com/"
-      },
-      {
-         "Id":"WinRARExtreme",
-         "Enabled":true,
-         "Label":"WinRAR Extreme Preset",
-         "Extension":"rar",
-         "Arguments":[
-            "-m5"
-         ],
-         "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true,
-		 "SourceLink":"http://www.rarlab.com/"
-      },
-      {
-         "Id":"PosixBzipMaximum",
-         "Enabled":true,
-         "Label":"Posix BZip Maximum",
-         "Extension":"tar.bz2",
-         "Arguments":[
-            "-9"
-         ],
-         "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target",
-         "CanRecurse":true,
-		 "SourceLink":"https://www.cygwin.com/"
-      },
+      "Id":"Posix",
+      "Label":"Posix based compressors provided by the cygwin project",
+      "SourceLink":"https://www.cygwin.com/",
+      "Extension":"tar.bz2",
+      "Tests"[{
+             "Id":"PosixGzipMaximum",
+             "Label":"Posix GZip Maximum",
+             "Arguments":[
+                "-9"
+             ],
+             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/gzip.exe\" @($Arguments) | Out-File $Target",
+          },
+          {
+             "Id":"PosixBzipMaximum",
+             "Label":"Posix BZip2 Maximum",
+             "Arguments":[
+                "-9"
+             ],
+             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target",
+          }
+      ]},
       {
          "Id":"NullCompressor",
-         "Enabled":true,
          "Label":"Null Compressor",
+         "Description":"The null compressor performs no compression and serves as a baseline to compare other test compressors against",
          "Extension":"orig",
          "Arguments":[
          ],

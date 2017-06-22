@@ -30,7 +30,7 @@ function Format-Result {
     $SourceItem = Get-Item $Source
     $TargetItem = Get-Item $Target
     $InputSize = (Calculate-Size $SourceItem)
-    $OutputSize = $TargetItem.Length
+    $OutputSize = (Calculate-Size $TargetItem)
 
     $CompressionRatio = $InputSize / $OutputSize
     $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
@@ -68,11 +68,15 @@ function Run-CompressionSuite {
 
     Write-Host "Performing Compression Test for $($CorpusConfig.Label)"
     foreach ($Compressor in $CompressorsConfig) {
-        if ($SourceItem.PSIsContainer -and -not $Compressor.CanRecurse) {
+        if ($Compressor.Enabled -ne $null -and  -not $Compressor.Enabled){
+            continue
+        }
+        if ($SourceItem.PSIsContainer -and -not ($Compressor.CanRecurse -eq $null -or $Compressor.CanRecurse)) {
             continue;
         }
         $Source = $SourceItem.FullName
         $Target = "$($TempDir.Fullname)/$([guid]::NewGuid().Guid).$($Compressor.Extension)"
+        
         $Arguments = $Compressor.Arguments
         $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
@@ -103,7 +107,29 @@ function Write_ResultsJSON {
     "Compression_Results_Loaded($ResultsText)" | Out-File "$Destination.jsonp"
 }
 
+Function Get_CompressorTests{
+    Param(
+        $Configuration
+    )
+    $Results = @()
+    foreach ($Config in $Configuration.Compressors) {
+        if ($Config.Tests -eq $null) {
+            $Results += $Config
+            continue
+        }
+        foreach ($Test in $Config.Tests) {
+            $TestObject = $Config | Select-Object -Property * -ExcludeProperty Tests
+            $Test.PsObject.Properties | % {
+                Add-Member -InputObject $TestObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+            }
+            $Results += $TestObject
+        }
+    }
+    return $Results
+}
+
 $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
+$Compressors = Get_CompressorTests $Configuration
 $Results = New-Object -TypeName PSObject
 foreach ($CorpusConfig in $Configuration.Corpuses) {
     if ($CorpusConfig.Enabled -ne 'true') {
@@ -112,7 +138,7 @@ foreach ($CorpusConfig in $Configuration.Corpuses) {
         continue
     }
 
-    $Result = Run-CompressionSuite $CorpusConfig $Configuration.Compressors
+    $Result = Run-CompressionSuite $CorpusConfig $Compressors
     Add-Member -InputObject $Results -NotePropertyName $CorpusConfig.Id -NotePropertyValue $Result
 
     Write-Host

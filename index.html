@@ -110,12 +110,24 @@
 					content.push("<p>" + line + "</p>");
 				})
 			}
+            if (compressor.SourceLink) {
+                content.push('<p>Visit the <a href="'+compressor.SourceLink+'">Compressor Website</a> to download and install.</p>')
+            }
+            if (compressor.Documentation) {
+                content.push('<p>Visit the <a href="'+compressor.Documentation+'">Compressor documentation</a> for usage information</p>')
+            }
+            if (!compressor.Tests){
 			content.push('<h4>Command Arguments</h4>');
 			content.push('<pre>' + compressor.Arguments.join(' ') + '</pre>');
 			content.push('<h4>Command Line</h4>');
 			content.push('<pre>'+ compressor.Command+'</pre>');
-            if (compressor.SourceLink) {
-                content.push('<p>Visit the <a href="'+compressor.SourceLink+'">Compressor Website</a> to download and install.</p>')
+            } else {
+                content.push('<table class="table">');
+                content.push('<tr><th>Label</th><th>Switches</th><th>Command</th></tr>')
+                compressor.Tests.forEach(function (test) {
+                    content.push('<tr><td>'+test.Label+'</td><td><pre>'+test.Arguments.join(' ')+'</pre></td><td><pre>'+(test.Command||compressor.Command)+'</pre></td></td>')
+                });
+                content.push('</table>');
             }
         });
         tabContainer.append('<div class="tab-pane fade" id="tab-compressors">' + content.join('\n') + '</div>');
