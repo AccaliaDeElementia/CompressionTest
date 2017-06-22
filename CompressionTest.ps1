@@ -27,15 +27,26 @@ function Format-Result {
         $Target,
         $ExecutionTime
     )
+    
     $SourceItem = Get-Item $Source
-    $TargetItem = Get-Item $Target
+    try {
+        $TargetItem = Get-Item $Target
+    } catch {}
     $InputSize = (Calculate-Size $SourceItem)
-    $OutputSize = (Calculate-Size $TargetItem)
+    
+    if ($Target -eq $null -or $TargetItem -eq $null -or $TargetItem.Length -eq 0) {
+        $OutputSize = $null
 
-    $CompressionRatio = $InputSize / $OutputSize
-    $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
-    $BitsPerByte = 8 / $CompressionRatio
-
+        $CompressionRatio = $null
+        $PercentCompression = $null
+        $BitsPerByte = $null
+    } else {
+        $OutputSize = (Calculate-Size $TargetItem)
+        
+        $CompressionRatio = $InputSize / $OutputSize
+        $PercentCompression = (1 - ($OutputSize / $InputSize)) * 100
+        $BitsPerByte = 8 / $CompressionRatio
+    }
     $Result = New-Object -TypeName PSObject -Property @{
         Corpus = $CorpusConfig.Id;
         Compressor = $CompressorConfig.Id;
@@ -78,7 +89,19 @@ function Run-CompressionSuite {
         $Target = "$($TempDir.Fullname)/$([guid]::NewGuid().Guid).$($Compressor.Extension)"
         
         $Arguments = $Compressor.Arguments
-        $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
+
+        $EnvPath = $env:Path;
+        try{
+            if ($Compressor.Path){
+                $env:Path = "$($Compressor.Path);$($env:Path)"
+            }
+            $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
+        } catch  {
+            Write-Error "An Error occured testing $($Compressor.Label)"
+            Write-Debug $_
+            $Target = $null
+        }
+        $env:Path = $EnvPath;
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
         $ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
     }

@@ -91,6 +91,7 @@
         "Documentation":"https://sevenzip.osdn.jp/chm/cmdline/",
         "Extension":"7z",
         "SourceLink":"http://www.7-zip.org/",
+		"Path":"C:/Program Files/7-Zip",
         "Command":"7z.exe a @($Arguments) $Target $Source",
         "Tests":[{
                  "Id":"7zMaximumCompressionCom",
@@ -121,7 +122,8 @@
         "Extension":"rar",
         "Description":"WinRar is a popular closed-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
         "Documentation":"http://acritum.com/software/manuals/winrar/",
-        "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
+		"Path":"C:/Program Files/WinRAR",
+        "Command":"Rar.exe a @($Arguments) $Target $Source",
         "SourceLink":"http://www.rarlab.com/",
         "Tests":[
             {
@@ -155,13 +157,14 @@
       "Label":"Posix based compressors provided by the cygwin project",
       "SourceLink":"https://www.cygwin.com/",
       "Extension":"tar.bz2",
+	  "Path":"C:/cygwin64/bin",
       "Tests":[{
              "Id":"PosixGzipMaximum",
              "Label":"Posix GZip Maximum",
              "Arguments":[
                 "-9"
              ],
-             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/gzip.exe\" @($Arguments) | Out-File $Target"
+             "Command":"tar.exe -cO $Source 2>$null | gzip.exe @($Arguments) | Out-File $Target"
           },
           {
              "Id":"PosixBzipMaximum",
@@ -169,7 +172,7 @@
              "Arguments":[
                 "-9"
              ],
-             "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target"
+             "Command":"tar.exe -cO $Source 2>$null | bzip2.exe @($Arguments) | Out-File $Target"
           }
       ]},
       {
