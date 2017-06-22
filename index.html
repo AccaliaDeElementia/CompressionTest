@@ -116,11 +116,6 @@
 			content.push('<pre>'+ compressor.Command+'</pre>');
             if (compressor.SourceLink) {
                 content.push('<p>Visit the <a href="'+compressor.SourceLink+'">Compressor Website</a> to download and install.</p>')
-                content.push('<ol>')
-                corpus.SourceLinks.forEach(function (source) {
-                    content.push("<li><a href=\"" + source.Link + "\">" + source.Label + "</a>")
-                });
-                content.push('</ol>')
             }
         });
         tabContainer.append('<div class="tab-pane fade" id="tab-compressors">' + content.join('\n') + '</div>');
