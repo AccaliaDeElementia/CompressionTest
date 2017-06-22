@@ -66,7 +66,7 @@
          "Enabled":true,
          "Label":"jQuery",
          "Description":"This corpus is composed of current source code for the popular javascript library jQuery. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.",
-         "Source":"$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\"; git clone https://github.com/jquery/jquery.git $Source 2>$null; $_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force; return $Source;",
+         "Source":"$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\";\n git clone https://github.com/jquery/jquery.git $Source 2>$null;\n$_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force;\nreturn $Source;",
          "SourceLinks":[
 
          ]
@@ -93,7 +93,8 @@
             "-m0=ppmd:o=20:mem=26"
          ],
          "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.7-zip.org/"
       },
       {
          "Id":"7zExtreme",
@@ -104,7 +105,8 @@
             "-mx=9"
          ],
          "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.7-zip.org/"
       },
       {
          "Id":"7zMaximum",
@@ -115,7 +117,8 @@
             "-mx=7"
          ],
          "Command":"7z.exe a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.7-zip.org/"
       },
       {
          "Id":"WinRARMaximumCompressionCom",
@@ -129,7 +132,8 @@
             "-mc24:256T+"
          ],
          "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.rarlab.com/"
       },
       {
          "Id":"WinRARMaximum",
@@ -140,7 +144,8 @@
             "-m4"
          ],
          "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.rarlab.com/"
       },
       {
          "Id":"WinRARExtreme",
@@ -151,7 +156,8 @@
             "-m5"
          ],
          "Command":"&\"C:/Program Files/WinRAR/Rar.exe\" a @($Arguments) $Target $Source",
-         "CanRecurse":true
+         "CanRecurse":true,
+		 "SourceLink":"http://www.rarlab.com/"
       },
       {
          "Id":"PosixBzipMaximum",
@@ -162,6 +168,17 @@
             "-9"
          ],
          "Command":"&\"C:/cygwin64/bin/tar.exe\" -cO $Source 2>$null | &\"C:/cygwin64/bin/bzip2.exe\" @($Arguments) | Out-File $Target",
+         "CanRecurse":true,
+		 "SourceLink":"https://www.cygwin.com/"
+      },
+      {
+         "Id":"NullCompressor",
+         "Enabled":true,
+         "Label":"Null Compressor",
+         "Extension":"orig",
+         "Arguments":[
+         ],
+         "Command":"Copy-Item -recurse $Source $Target",
          "CanRecurse":true
       }
    ]

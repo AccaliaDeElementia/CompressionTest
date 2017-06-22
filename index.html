@@ -99,7 +99,47 @@
         });
         tabContainer.append('<div class="tab-pane fade" id="tab-corpuses">' + content.join('\n') + '</div>');
 
+		// Create Compressors Tab
 
+		tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-compressors">Compressors</a></li>');
+        var content = ['<h2>Compressors</h2>', '<p>To perform the tests many different test compressors are required to test their relative performance. The following are the test compressors used in these tests</p>'];
+        results.Compressors.forEach(function (compressor) {
+		    content.push('<h3>' + compressor.Label + '</h3>');
+            if (compressor.Description) {
+				compressor.Description.split('\n').forEach(function (line) {
+					content.push("<p>" + line + "</p>");
+				})
+			}
+			content.push('<h4>Command Arguments</h4>');
+			content.push('<pre>' + compressor.Arguments.join(' ') + '</pre>');
+			content.push('<h4>Command Line</h4>');
+			content.push('<pre>'+ compressor.Command+'</pre>');
+            if (compressor.SourceLink) {
+                content.push('<p>Visit the <a href="'+compressor.SourceLink+'">Compressor Website</a> to download and install.</p>')
+                content.push('<ol>')
+                corpus.SourceLinks.forEach(function (source) {
+                    content.push("<li><a href=\"" + source.Link + "\">" + source.Label + "</a>")
+                });
+                content.push('</ol>')
+            }
+        });
+        tabContainer.append('<div class="tab-pane fade" id="tab-compressors">' + content.join('\n') + '</div>');
+
+		
+		function compareResult (a, b) {
+			if (a.CompressionRatio < b.CompressionRatio) {
+				return 1;
+			} else if (a.CompressionRatio > b.CompressionRatio) {
+				return -1;
+			}
+			if (a.ExecutionTime < b.ExecutionTime) {
+				return 1;
+			} else if (a.ExecutionTime > b.ExecutionTime) {
+				return -1;
+			}
+			return 0
+		}
+		
         // Create Result Tabs
         results.Corpuses.forEach(function (corpus) {
             tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpus-'+corpus.Id+'">'+corpus.Label+'</a></li>');
@@ -109,8 +149,9 @@
             content.push('<table class="table">');
             content.push('<tr><th>Position</th><th>Compressor</th><th>Switches</th><th>Percent Compression</th><th>Compression Ratio</th><th>Bits Per Byte</th></tr>')
             var i = 1;
+			corpusResults.sort(compareResult);
             corpusResults.forEach(function(result) {
-                content.push('<tr><th>'+i+'</th><th>'+result.Compressor+'</th><th>'+result.Arguments+'</th><th>'+result.PercentCompression+'</th><th>'+result.CompressionRatio+'</th><th>'+result.BitsPerByte+'</th></tr>')
+                content.push('<tr><th>'+i+'</th><th>'+result.Label+'</th><th>'+result.Arguments+'</th><th>'+result.PercentCompression.toFixed(2)+'</th><th>'+result.CompressionRatio.toFixed(5)+'</th><th>'+result.BitsPerByte.toFixed(5)+'</th></tr>')
                 i += 1;
             });
             content.push('</table>');
