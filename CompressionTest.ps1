@@ -97,6 +97,7 @@ function Run-CompressionSuite {
                 $env:Path = "$($Compressor.Path);$($env:Path)"
             }
             $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
+			$ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
         } catch  {
             Write-Error "An Error occured testing $($Compressor.Label)"
             Write-Debug $_
@@ -105,7 +106,6 @@ function Run-CompressionSuite {
         }
         $env:Path = $EnvPath;
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
-        $ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
     }
     Write-Host
     return $ResultsArray
@@ -128,10 +128,11 @@ function Write_ResultsJSON {
     )
     $Destination = $OutputPath.FullName + "\$Filename"
     $ResultsText = $Results | ConvertTo-Json -Depth 50
-    $ResultsText | Out-File "$Destination.json"
-    "Compression_Results_Loaded($ResultsText)" | Out-File "$Destination.jsonp"
+    $ResultsText | Out-File -Encoding utf8 "$Destination.json"
+    "Compression_Results_Loaded($ResultsText)" | Out-File -Encoding utf8 "$Destination.jsonp"
 }
 
+#TODO: These two methods can probably be combined
 Function Get_CompressorTests{
     Param(
         $Configuration
@@ -153,13 +154,35 @@ Function Get_CompressorTests{
     return $Results
 }
 
+Function Get_Corpora{
+    Param(
+        $Configuration
+    )
+    $Results = @()
+    foreach ($Config in $Configuration.Corpora) {
+        if ($Config.SubCorpora -eq $null) {
+            $Results += $Config
+            continue
+        }
+        foreach ($Corpora in $Config.SubCorpora) {
+            $CorporaObject = $Config | Select-Object -Property * -ExcludeProperty SubCorpora
+            $Corpora.PsObject.Properties | % {
+                Add-Member -InputObject $CorporaObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+            }
+            $Results += $CorporaObject
+        }
+    }
+    return $Results
+}
+
 $TestStart = Get-Date
 Write-Host "Compression Tests Starting at $TestStart"
 Write-Host
 
 try{
-    $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
+    $Configuration = Get-Content -Encoding utf8 .\configuration.json | ConvertFrom-Json
     $Compressors = Get_CompressorTests $Configuration
+	$Corpora = Get_Corpora $Configuration
 } catch {
     Write-Error "Failed to load test Configuration"
     Write-Debug $_
@@ -168,8 +191,8 @@ try{
 
 
 $Results = New-Object -TypeName PSObject
-foreach ($CorpusConfig in $Configuration.Corpuses) {
-    if ($CorpusConfig.Enabled -ne 'true') {
+foreach ($CorpusConfig in $Corpora) {
+    if ($CorpusConfig.Enabled -ne $null -and $CorpusConfig.Enabled -ne 'true') {
         Write-Host "Skipping Disabled $($CorpusConfig.Label) Corpus..."
         Write-Host
         continue

@@ -100,7 +100,8 @@
                 compress data, Yet no one tries to actually test the utilities against multiple types of input data. So
                 I decided to do just that. </p>
             <p>These compression tests are performed using PowerShell to script the tests and are automatically run
-                using appveyor, allowing new utilities or test corpuses to be tested and reported automatically.</p>
+                using <a href="https://www.appveyor.com/">AppVeyor</a>, allowing new utilities or test corpora to be
+                tested and reported automatically.</p>
         </div>
     </div>
 </div>
@@ -113,32 +114,46 @@
 </footer>
 <script type="text/Javascript">
     'use strict';
+
+    function ConstructCorpus(corpus, content, header) {
+        if (!header) {
+            header = 'h3';
+        }
+        content.push('<' + header + '>' + (corpus.Label || corpus.Id) + '</' + header + '>');
+        corpus.Description.split('\n').forEach(function (line) {
+            content.push("<p>" + line + "</p>");
+        })
+        if (corpus.SourceLinks && corpus.SourceLinks.length > 0) {
+            content.push("<p>The following is a list of sources used for this test corpus:</p>")
+            content.push('<ol>')
+            corpus.SourceLinks.forEach(function (source) {
+                content.push("<li><a href=\"" + source.Link + "\">" + source.Label + "</a>")
+            });
+            content.push('</ol>')
+        }
+    }
+
     function Compression_Results_Loaded(results) {
         console.log('loaded!')
         var tabList = $('ul.nav-tabs');
         var tabContainer = $('div.tab-content');
 
         // Output the Test Corpus Tab
-        tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpuses">Test Corpuses</a></li>');
-        var content = ['<h2>Test Corpuses</h2>', '<p>To perform the tests several different test corpuses are required to stress the utilities in different ways. The following are the test corpuses used in these tests</p>'];
-        results.Corpuses.forEach(function (corpus) {
-            content.push('<h3>' + corpus.Label + '</h3>');
-            corpus.Description.split('\n').forEach(function (line) {
-                content.push("<p>" + line + "</p>");
-            })
-            if (corpus.SourceLinks && corpus.SourceLinks.length > 0) {
-                content.push("<p>The following is a list of sources used for this test corpus:</p>")
-                content.push('<ol>')
-                corpus.SourceLinks.forEach(function (source) {
-                    content.push("<li><a href=\"" + source.Link + "\">" + source.Label + "</a>")
+        tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" ' +
+            'href="#tab-corpora">Test Corpora</a></li>');
+        var content = ['<h2>Test Corpora</h2>', '<p>To perform the tests several different test corpora are required ' +
+        'to stress the utilities in different ways. The following are the test corpuses used in these tests</p>'];
+        results.Corpora.forEach(function (corpus) {
+            ConstructCorpus(corpus, content, 'h3');
+            if (corpus.SubCorpora && corpus.SubCorpora.length > 0) {
+                corpus.SubCorpora.forEach(function (subCorpora) {
+                    ConstructCorpus(subCorpora, content, 'h4');
                 });
-                content.push('</ol>')
             }
         });
-        tabContainer.append('<div class="tab-pane fade" id="tab-corpuses">' + content.join('\n') + '</div>');
+        tabContainer.append('<div class="tab-pane fade" id="tab-corpora">' + content.join('\n') + '</div>');
 
         // Create Compressors Tab
-
         tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-compressors">Compressors</a></li>');
         var content = ['<h2>Compressors</h2>', '<p>To perform the tests many different test compressors are required to test their relative performance. The following are the test compressors used in these tests</p>'];
         results.Compressors.forEach(function (compressor) {
@@ -171,8 +186,7 @@
                     content.push('</table>');
                 }
             }
-        )
-        ;
+        );
         tabContainer.append('<div class="tab-pane fade" id="tab-compressors">' + content.join('\n') + '</div>');
 
 
@@ -190,21 +204,36 @@
             return 0
         }
 
-        // Create Result Tabs
-        results.Corpuses.forEach(function (corpus) {
-            tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpus-' + corpus.Id + '">' + corpus.Label + '</a></li>');
-            var content = ['<div class="tab-pane fade" id="tab-corpus-' + corpus.Id + '">',
-                '<h2>' + corpus.Label + '</h2>'];
-            var corpusResults = results.Results[corpus.Id]
+        function createResultsTable(results, content) {
             content.push('<table class="table">');
-            content.push('<tr><th>Position</th><th>Compressor</th><th>Switches</th><th>Percent Compression</th><th>Compression Ratio</th><th>Bits Per Byte</th></tr>')
+            content.push('<tr><th>Position</th><th>Compressor</th><th>Switches</th><th>Output Size</th><th>Percent Compression</th><th>Compression Ratio</th><th>Bits Per Byte</th></tr>')
             var i = 1;
-            corpusResults.sort(compareResult);
-            corpusResults.forEach(function (result) {
-                content.push('<tr><th>' + i + '</th><th>' + result.Label + '</th><th>' + result.Arguments + '</th><th>' + result.PercentCompression.toFixed(2) + '</th><th>' + result.CompressionRatio.toFixed(5) + '</th><th>' + result.BitsPerByte.toFixed(5) + '</th></tr>')
+            results.sort(compareResult);
+            results.forEach(function (result) {
+                content.push('<tr><td>' + i + '</td><td>' + result.Label + '</td><td>' + result.Arguments + '</td><td>' + result.OutputSize + '</td><td>' + result.PercentCompression.toFixed(2) + '</td><td>' + result.CompressionRatio.toFixed(5) + '</td><td>' + result.BitsPerByte.toFixed(5) + '</td></tr>')
                 i += 1;
             });
             content.push('</table>');
+        }
+
+        // Create Result Tabs
+        results.Corpora.forEach(function (corpus) {
+            tabList.append('<li role="presentation" class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-corpus-' + corpus.Id + '">' + (corpus.Label || corpus.Id) + '</a></li>');
+            var content = ['<div class="tab-pane fade" id="tab-corpus-' + corpus.Id + '">',
+                '<h2>' + (corpus.Label || corpus.Id) + '</h2>'];
+            var corpusResults = results.Results[corpus.Id]
+            if (corpusResults) {
+                createResultsTable(corpusResults, content);
+            }
+            if (corpus.SubCorpora && corpus.SubCorpora.length > 0) {
+                corpus.SubCorpora.forEach(function (subCorpus) {
+                    content.push('<h2>' + (subCorpus.Label || subCorpus.Id) + '</h2>');
+                    var subCorpusResults = results.Results[subCorpus.Id]
+                    if (subCorpusResults) {
+                        createResultsTable(subCorpusResults, content);
+                    }
+                });
+            }
             content.push('</div>');
             tabContainer.append(content.join('\n'));
         })
