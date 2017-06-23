@@ -97,6 +97,7 @@ function Run-CompressionSuite {
                 $env:Path = "$($Compressor.Path);$($env:Path)"
             }
             $TimeData = Measure-Command { Invoke-Expression $Compressor.Command }
+			$ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
         } catch  {
             Write-Error "An Error occured testing $($Compressor.Label)"
             Write-Debug $_
@@ -105,7 +106,6 @@ function Run-CompressionSuite {
         }
         $env:Path = $EnvPath;
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
-        $ResultsArray.Add((Format-Result $CorpusConfig $Compressor $Source $Target $TimeData))
     }
     Write-Host
     return $ResultsArray

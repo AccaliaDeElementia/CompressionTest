@@ -8,7 +8,7 @@
           "Id": "CompleteText",
           "Label": "Complete Text Corpus",
           "Description": "This corpus contains the contents of all language specific literature corpora.",
-          "Source": "Get-Item -Path ./TextCorpus/"
+          "Source": "Get-Item -Path ./TextCorpus"
         },
         {
           "Id": "EnglishText",
