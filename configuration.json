@@ -1,189 +1,230 @@
-{
-   "Corpuses":[
-      {
-         "Id":"EnglishText",
-         "Enabled":true,
-         "Label":"English Text",
-         "Description":"This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of approximately 10 megabytes that incorporates several dramatically different writing styles.",
-         "Source":"Get-Item -Path ./Corpus",
-         "SourceLinks":[
-            {
-               "Label":"The King James Bible",
-               "Link":"http://www.gutenberg.org/ebooks/10"
-            },
-            {
-               "Label":"The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell",
-               "Link":"http://www.gutenberg.org/ebooks/2800"
-            },
-            {
-               "Label":"The Adventures of Tom Sawyer by Mark Twain",
-               "Link":"https://www.gutenberg.org/ebooks/74"
-            },
-            {
-               "Label":"Pride and Prejudice by Jane Austin",
-               "Link":"https://www.gutenberg.org/ebooks/1342"
-            },
-            {
-               "Label":"Dracula by Bram Stoker",
-               "Link":"https://www.gutenberg.org/ebooks/345"
-            },
-            {
-               "Label":"War and Peace by graf Leo Tolstoy",
-               "Link":"https://www.gutenberg.org/ebooks/2600"
-            },
-            {
-               "Label":"Beowulf",
-               "Link":"https://www.gutenberg.org/ebooks/16328"
-            },
-            {
-               "Label":"Metamorphosis by Franz Kafka",
-               "Link":"https://www.gutenberg.org/ebooks/5200"
-            }
-         ]
-      },
-      {
-         "Id":"RandomBinary",
-         "Enabled":true,
-         "Label":"Random Binary Data",
-         "Description":"This corpus is created as a single 10 megabyte file of pseudorandom binary data. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
-         "Source":"New_RandomBinaryFile \"$TempDir/RandomBinary.dat\" -FileSize 10mb",
-         "SourceLinks":[
-
-         ]
-      },
-      {
-         "Id":"RandomText",
-         "Enabled":true,
-         "Label":"Random ASCII Text",
-         "Description":"This corpus is created as a single 10 megabyte file of pseudorandom ASCII text. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
-         "Source":"New_RandomTextFile \"$TempDir/RandomTextBinary.dat\" -FileSize 10mb",
-         "SourceLinks":[
-
-         ]
-      },
-      {
-         "Id":"jquery",
-         "Enabled":true,
-         "Label":"jQuery",
-         "Description":"This corpus is composed of current source code for the popular javascript library jQuery. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.",
-         "Source":"$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\";\n git clone https://github.com/jquery/jquery.git $Source 2>$null;\n$_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force;\nreturn $Source;",
-         "SourceLinks":[
-
-         ]
-      }
-   ],
-   "Compressors":[
-      {
-         "Id":"Compress-Archive",
-         "Enabled":false,
-         "Label":"Compress-Archive cmdlet",
-         "Description":"The <pre>Compress-Archive</pre> cmdlet uses the built in Windows zip compressor that is also used by Explorer when sending selections to compressed folders.",
-         "Documentation":"https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.archive/compress-archive",
-         "Extension":"zip",
-         "Arguments":[
-
-         ],
-         "Command":"Compress-Archive $Source $Target"
-      },
-      {
-        "Id":"7Zip",
-        "Description":"7Zip is a popular open-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
-        "Documentation":"https://sevenzip.osdn.jp/chm/cmdline/",
-        "Extension":"7z",
-        "SourceLink":"http://www.7-zip.org/",
-		"Path":"C:/Program Files/7-Zip",
-        "Command":"7z.exe a @($Arguments) $Target $Source",
-        "Tests":[{
-                 "Id":"7zMaximumCompressionCom",
-                 "Label":"7zip MaximumCompression.com Best Switches",
-                 "Arguments":[
-                    "-m0=ppmd:o=20:mem=26"
-                 ]
-              },
-              {
-                 "Id":"7zExtreme",
-                 "Label":"7zip Extreme Preset",
-                 "Arguments":[
-                    "-mx=9"
-                 ]
-              },
-              {
-                 "Id":"7zMaximum",
-                 "Label":"7zip Maximum Preset",
-                 "Arguments":[
-                    "-mx=7"
-                 ]
-              }
+{}{
+  "Corpuses": [
+    {
+      "Id": "EnglishText",
+      "Enabled": true,
+      "Label": "English Text",
+      "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of approximately 10 megabytes that incorporates several dramatically different writing styles.",
+      "Source": "Get-Item -Path ./Corpus",
+      "SourceLinks": [
+        {
+          "Label": "The King James Bible",
+          "Link": "http://www.gutenberg.org/ebooks/10"
+        },
+        {
+          "Label": "The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell",
+          "Link": "http://www.gutenberg.org/ebooks/2800"
+        },
+        {
+          "Label": "The Adventures of Tom Sawyer by Mark Twain",
+          "Link": "https://www.gutenberg.org/ebooks/74"
+        },
+        {
+          "Label": "Pride and Prejudice by Jane Austin",
+          "Link": "https://www.gutenberg.org/ebooks/1342"
+        },
+        {
+          "Label": "Dracula by Bram Stoker",
+          "Link": "https://www.gutenberg.org/ebooks/345"
+        },
+        {
+          "Label": "War and Peace by graf Leo Tolstoy",
+          "Link": "https://www.gutenberg.org/ebooks/2600"
+        },
+        {
+          "Label": "Beowulf",
+          "Link": "https://www.gutenberg.org/ebooks/16328"
+        },
+        {
+          "Label": "Metamorphosis by Franz Kafka",
+          "Link": "https://www.gutenberg.org/ebooks/5200"
+        }
+      ]
+    },
+    {
+      "Id": "RandomBinary",
+      "Enabled": true,
+      "Label": "Random Binary Data",
+      "Description": "This corpus is created as a single 10 megabyte file of pseudorandom binary data. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
+      "Source": "New_RandomBinaryFile \"$TempDir/RandomBinary.dat\" -FileSize 10mb",
+      "SourceLinks": [
+      ]
+    },
+    {
+      "Id": "RandomText",
+      "Enabled": true,
+      "Label": "Random ASCII Text",
+      "Description": "This corpus is created as a single 10 megabyte file of pseudorandom ASCII text. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
+      "Source": "New_RandomTextFile \"$TempDir/RandomTextBinary.dat\" -FileSize 10mb",
+      "SourceLinks": [
+      ]
+    },
+    {
+      "Id": "jquery",
+      "Enabled": true,
+      "Label": "jQuery",
+      "Description": "This corpus is composed of current source code for the popular javascript library jQuery. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.",
+      "Source": "$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\";\n git clone https://github.com/jquery/jquery.git $Source 2>$null;\n$_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force;\nreturn $Source;",
+      "SourceLinks": [
+      ]
+    }
+  ],
+  "Compressors": [
+    {
+      "Id": "Compress-Archive",
+      "Enabled": false,
+      "Description": "The <code>Compress-Archive</code> cmdlet uses the built in Windows zip compressor that is also used by Explorer when sending selections to compressed folders.",
+      "Documentation": "https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.archive/compress-archive",
+      "Extension": "zip",
+      "Arguments": [
+      ],
+      "Command": "Compress-Archive $Source $Target"
+    },
+    {
+      "Id": "7Zip",
+      "Description": "7Zip is a popular open-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
+      "Documentation": "https://sevenzip.osdn.jp/chm/cmdline/",
+      "Extension": "7z",
+      "SourceLink": "http://www.7-zip.org/",
+      "Path": "C:/Program Files/7-Zip",
+      "Command": "7z.exe a @($Arguments) $Target $Source",
+      "Tests": [
+        {
+          "Id": "7zMaximumCompressionCom",
+          "Label": "7zip MaximumCompression.com Best Switches",
+          "Arguments": [
+            "-m0=ppmd:o=20:mem=26"
           ]
-      },
-      {
-        "Id":"WinRAR",
-        "Label":"WinRAR",
-        "Extension":"rar",
-        "Description":"WinRar is a popular closed-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
-        "Documentation":"http://acritum.com/software/manuals/winrar/",
-		"Path":"C:/Program Files/WinRAR",
-        "Command":"Rar.exe a @($Arguments) $Target $Source",
-        "SourceLink":"http://www.rarlab.com/",
-        "Tests":[
-            {
-                 "Id":"WinRARMaximumCompressionCom",
-                 "Label":"WinRAR MaximumCompression.com Best Switches",
-                 "Arguments":[
-                    "-ep",
-                    "-m5",
-                    "-mdA",
-                    "-mc24:256T+"
-                 ]
-              },
-              {
-                 "Id":"WinRARMaximum",
-                 "Label":"WinRAR Maximum Preset",
-                 "Arguments":[
-                    "-m4"
-                 ]
-              },
-              {
-                 "Id":"WinRARExtreme",
-                 "Label":"WinRAR Extreme Preset",
-                 "Arguments":[
-                    "-m5"
-                 ]
-              }
+        },
+        {
+          "Id": "7zExtreme",
+          "Label": "7zip Extreme Preset",
+          "Arguments": [
+            "-mx=9"
           ]
-      },
-      {
-      "Id":"Posix",
-      "Label":"Posix based compressors provided by the cygwin project",
-      "SourceLink":"https://www.cygwin.com/",
-      "Extension":"tar.bz2",
-	  "Path":"C:/cygwin64/bin",
-      "Tests":[{
-             "Id":"PosixGzipMaximum",
-             "Label":"Posix GZip Maximum",
-             "Arguments":[
-                "-9"
-             ],
-             "Command":"tar.exe -cO $Source 2>$null | gzip.exe @($Arguments) | Out-File $Target"
-          },
-          {
-             "Id":"PosixBzipMaximum",
-             "Label":"Posix BZip2 Maximum",
-             "Arguments":[
-                "-9"
-             ],
-             "Command":"tar.exe -cO $Source 2>$null | bzip2.exe @($Arguments) | Out-File $Target"
-          }
-      ]},
-      {
-         "Id":"NullCompressor",
-         "Label":"Null Compressor",
-         "Description":"The null compressor performs no compression and serves as a baseline to compare other test compressors against",
-         "Extension":"orig",
-         "Arguments":[
-         ],
-         "Command":"Copy-Item -recurse $Source $Target",
-         "CanRecurse":true
-      }
-   ]
+        },
+        {
+          "Id": "7zMaximum",
+          "Label": "7zip Maximum Preset",
+          "Arguments": [
+            "-mx=7"
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "7ZipTar",
+      "Label": "Posix based compressors provided by the cygwin project",
+      "Description": "7Zip is a popular open-source archiving program supporting popular Linux archive formats.",
+      "Documentation": "https://sevenzip.osdn.jp/chm/cmdline/",
+      "Extension": "7z",
+      "SourceLink": "http://www.7-zip.org/",
+      "Path": "C:/Program Files/7-Zip",
+      "Command": "7z.exe a -ttar -so archive.tar $Source | 7z.exe a -si @($Arguments) $Target",
+      "Tests": [
+        {
+          "Id": "7ZipTarBz2",
+          "Label": "7zip tar.bz2 ",
+          "Extension":"tar.bz2",
+          "Arguments": [
+            "-mx=9"
+          ]
+        },
+        {
+          "Id": "7ZipTarGz",
+          "Label": "7zip tar.Gz2 ",
+          "Extension":"tar.gz",
+          "Arguments": [
+            "-mx=9"
+          ]
+        },
+        {
+          "Id": "7ZipTarxz",
+          "Label": "7zip tar.xz ",
+          "Extension":"tar.xz",
+          "Arguments": [
+            "-mx=9"
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "WinRAR",
+      "Label": "WinRAR",
+      "Extension": "rar",
+      "Description": "WinRar is a popular closed-source archiving program supporting a large variety of archive formats and achieves good compression ratios.",
+      "Documentation": "http://acritum.com/software/manuals/winrar/",
+      "Path": "C:/Program Files/WinRAR",
+      "Command": "Rar.exe a @($Arguments) $Target $Source",
+      "SourceLink": "http://www.rarlab.com/",
+      "Tests": [
+        {
+          "Id": "WinRARMaximumCompressionCom",
+          "Label": "WinRAR MaximumCompression.com Best Switches",
+          "Arguments": [
+            "-ep",
+            "-m5",
+            "-mdA",
+            "-mc24:256T+"
+          ]
+        },
+        {
+          "Id": "WinRARMaximum",
+          "Label": "WinRAR Maximum Preset",
+          "Arguments": [
+            "-m4"
+          ]
+        },
+        {
+          "Id": "WinRARExtreme",
+          "Label": "WinRAR Extreme Preset",
+          "Arguments": [
+            "-m5"
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "LinuxCygwin",
+      "Label": "Popular Linux compressors provided by the cygwin project",
+      "SourceLink": "https://www.cygwin.com/",
+      "Extension": "tar.bz2",
+      "Path": "C:/cygwin64/bin",
+      "Tests": [
+        {
+          "Id": "PosixGzipMaximum",
+          "Label": "Posix GZip Maximum",
+          "Arguments": [
+            "-9"
+          ],
+          "Command": "tar.exe -cO $Source 2>$null | gzip.exe @($Arguments) | Out-File $Target"
+        },
+        {
+          "Id": "PosixBzipMaximum",
+          "Label": "Posix BZip2 Maximum",
+          "Arguments": [
+            "-9"
+          ],
+          "Command": "tar.exe -cO $Source 2>$null | bzip2.exe @($Arguments) | Out-File $Target"
+        },
+        {
+          "Id": "PosixXzMaximum",
+          "Label": "Posix Xz Maximum",
+          "Arguments": [
+            "-9"
+          ],
+          "Command": "tar.exe -cO $Source 2>$null | xz.exe @($Arguments) | Out-File $Target"
+        }
+      ]
+    },
+    {
+      "Id": "NullCompressor",
+      "Label": "Null Compressor",
+      "Description": "The null compressor performs no compression and serves as a baseline to compare other test compressors against",
+      "Extension": "orig",
+      "Arguments": [
+      ],
+      "Command": "Copy-Item -recurse $Source $Target"
+    }
+  ]
 }
