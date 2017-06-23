@@ -1,125 +1,138 @@
 {
-  "Corpuses": [
+  "Corpora": [
     {
-      "Id": "EnglishText",
-      "Enabled": true,
-      "Label": "English Text",
-      "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of approximately 10 megabytes that incorporates several dramatically different writing styles.",
-      "Source": "Get-Item -Path ./TextCorpus/English",
-      "SourceLinks": [
+      "Id": "Literature",
+      "Description": "These corpora are based on public domain literature selections provided by Project Gutenberg. These texts were chosen to test compression algorithms on human readable texts",
+      "SubCorpora": [
         {
-          "Label": "The King James Bible",
-          "Link": "http://www.gutenberg.org/ebooks/10"
+          "Id": "CompleteText",
+          "Label": "Complete Text Corpus",
+          "Description": "This corpus contains the contents of all language specific literature corpora.",
+          "Source": "Get-Item -Path ./TextCorpus/"
         },
         {
-          "Label": "The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell",
-          "Link": "http://www.gutenberg.org/ebooks/2800"
+          "Id": "EnglishText",
+          "Label": "English Text",
+          "Description": "This corpus contains English language public domain books provided by Project Gutenberg.",
+          "Source": "Get-Item -Path ./TextCorpus/English",
+          "SourceLinks": [
+            {
+              "Label": "The King James Bible",
+              "Link": "http://www.gutenberg.org/ebooks/10"
+            },
+            {
+              "Label": "The Koran (Al-Qur'an) as translated by G. Margoliuth and J. M. Rodwell",
+              "Link": "http://www.gutenberg.org/ebooks/2800"
+            },
+            {
+              "Label": "The Adventures of Tom Sawyer by Mark Twain",
+              "Link": "https://www.gutenberg.org/ebooks/74"
+            },
+            {
+              "Label": "Pride and Prejudice by Jane Austin",
+              "Link": "https://www.gutenberg.org/ebooks/1342"
+            },
+            {
+              "Label": "Dracula by Bram Stoker",
+              "Link": "https://www.gutenberg.org/ebooks/345"
+            },
+            {
+              "Label": "War and Peace by graf Leo Tolstoy",
+              "Link": "https://www.gutenberg.org/ebooks/2600"
+            },
+            {
+              "Label": "Beowulf",
+              "Link": "https://www.gutenberg.org/ebooks/16328"
+            },
+            {
+              "Label": "Metamorphosis by Franz Kafka",
+              "Link": "https://www.gutenberg.org/ebooks/5200"
+            }
+          ]
         },
         {
-          "Label": "The Adventures of Tom Sawyer by Mark Twain",
-          "Link": "https://www.gutenberg.org/ebooks/74"
+          "Id": "ChineseText",
+          "Label": "Chinese Text",
+          "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of non-english text approximately 8 megabytes.",
+          "Source": "Get-Item -Path ./TextCorpus/Chinese",
+          "SourceLinks": [
+            {
+              "Label": "紅樓夢 (Dream of the Red Chamber) by Xueqin Cao",
+              "Link": "https://www.gutenberg.org/ebooks/24264"
+            },
+            {
+              "Label": "水滸傳 (Outlaws of the Marsh) by Nai'an Shi",
+              "Link": "https://www.gutenberg.org/ebooks/23863"
+            },
+            {
+              "Label": "三國志演義 (Romance of the Three Kingdoms) by Guanzhong Luo",
+              "Link": "https://www.gutenberg.org/ebooks/23950"
+            },
+            {
+              "Label": "西遊記 (Journey to the West) by Cheng'en Wu",
+              "Link": "https://www.gutenberg.org/ebooks/23962"
+            },
+            {
+              "Label": "孫子兵法 (The Art of War) by Sunzi",
+              "Link": "https://www.gutenberg.org/ebooks/23864"
+            }
+          ]
         },
         {
-          "Label": "Pride and Prejudice by Jane Austin",
-          "Link": "https://www.gutenberg.org/ebooks/1342"
-        },
-        {
-          "Label": "Dracula by Bram Stoker",
-          "Link": "https://www.gutenberg.org/ebooks/345"
-        },
-        {
-          "Label": "War and Peace by graf Leo Tolstoy",
-          "Link": "https://www.gutenberg.org/ebooks/2600"
-        },
-        {
-          "Label": "Beowulf",
-          "Link": "https://www.gutenberg.org/ebooks/16328"
-        },
-        {
-          "Label": "Metamorphosis by Franz Kafka",
-          "Link": "https://www.gutenberg.org/ebooks/5200"
+          "Id": "FrenchText",
+          "Label": "French Text",
+          "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of non-english text approximately 8 megabytes.",
+          "Source": "Get-Item -Path ./TextCorpus/French",
+          "SourceLinks": [
+            {
+              "Label": "Du côté de chez Swann (Swann's Way) by Marcel Proust",
+              "Link": "https://www.gutenberg.org/ebooks/2650"
+            },
+            {
+              "Label": "Les liaisons dangereuses (Dangerous Liaisons) by Choderlos de Laclos",
+              "Link": "https://www.gutenberg.org/ebooks/52006"
+            },
+            {
+              "Label": "A l'ombre des jeunes filles en fleurs - Première partie (In the Shadow of Young Girls in Flower - Part One) by Marcel Proust",
+              "Link": "https://www.gutenberg.org/ebooks/2998"
+            },
+            {
+              "Label": "Voyage au Centre de la Terre (Journey to the Center of the Earth) by Jules Verne",
+              "Link": "https://www.gutenberg.org/ebooks/23962"
+            },
+            {
+              "Label": "Vingt mille Lieues Sous Les Mers — Complete (20,000 Leagues Under the Sea — Complete) by Jules Verne",
+              "Link": "https://www.gutenberg.org/ebooks/23864"
+            }
+          ]
         }
       ]
     },
     {
-      "Id": "ChineseText",
-      "Enabled": true,
-      "Label": "Chinese Text",
-      "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of non-english text approximately 8 megabytes.",
-      "Source": "Get-Item -Path ./TextCorpus/Chinese",
-      "SourceLinks": [
+      "Id": "RandomData",
+      "Label": "Random Data",
+      "Description": "These corpora were chosen to stress compression algorithms with incompressible or nearly incompressible data",
+      "SubCorpora": [
         {
-          "Label": "紅樓夢 (Dream of the Red Chamber) by Xueqin Cao",
-          "Link": "https://www.gutenberg.org/ebooks/24264"
+          "Id": "RandomBinary",
+          "Label": "Random Binary Data",
+          "Description": "This corpus is created as a single 10 megabyte file of pseudorandom binary data.",
+          "Source": "New_RandomBinaryFile \"$TempDir/RandomBinary.dat\" -FileSize 10mb",
+          "SourceLinks": [
+          ]
         },
         {
-          "Label": "水滸傳 (Outlaws of the Marsh) by Nai'an Shi",
-          "Link": "https://www.gutenberg.org/ebooks/23863"
-        },
-        {
-          "Label": "三國志演義 (Romance of the Three Kingdoms) by Guanzhong Luo",
-          "Link": "https://www.gutenberg.org/ebooks/23950"
-        },
-        {
-          "Label": "西遊記 (Journey to the West) by Cheng'en Wu",
-          "Link": "https://www.gutenberg.org/ebooks/23962"
-        },
-        {
-          "Label": "孫子兵法 (The Art of War) by Sunzi",
-          "Link": "https://www.gutenberg.org/ebooks/23864"
+          "Id": "RandomText",
+          "Label": "Random ASCII Text",
+          "Description": "This corpus is created as a single 10 megabyte file of pseudorandom ASCII text.",
+          "Source": "New_RandomTextFile \"$TempDir/RandomTextBinary.dat\" -FileSize 10mb",
+          "SourceLinks": [
+          ]
         }
-      ]
-    },
-    {
-      "Id": "FrenchText",
-      "Enabled": true,
-      "Label": "French Text",
-      "Description": "This corpus contains Public domain books provided by Project Gutenberg. These books were chosen to create a test corpus of non-english text approximately 8 megabytes.",
-      "Source": "Get-Item -Path ./TextCorpus/French",
-      "SourceLinks": [
-        {
-          "Label": "Du côté de chez Swann (Swann's Way) by Marcel Proust",
-          "Link": "https://www.gutenberg.org/ebooks/2650"
-        },
-        {
-          "Label": "Les liaisons dangereuses (Dangerous Liaisons) by Choderlos de Laclos",
-          "Link": "https://www.gutenberg.org/ebooks/52006"
-        },
-        {
-          "Label": "A l'ombre des jeunes filles en fleurs - Première partie (In the Shadow of Young Girls in Flower - Part One) by Marcel Proust",
-          "Link": "https://www.gutenberg.org/ebooks/2998"
-        },
-        {
-          "Label": "Voyage au Centre de la Terre (Journey to the Center of the Earth) by Jules Verne",
-          "Link": "https://www.gutenberg.org/ebooks/23962"
-        },
-        {
-          "Label": "Vingt mille Lieues Sous Les Mers — Complete (20,000 Leagues Under the Sea — Complete) by Jules Verne",
-          "Link": "https://www.gutenberg.org/ebooks/23864"
-        }
-      ]
-    },
-    {
-      "Id": "RandomBinary",
-      "Enabled": true,
-      "Label": "Random Binary Data",
-      "Description": "This corpus is created as a single 10 megabyte file of pseudorandom binary data. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
-      "Source": "New_RandomBinaryFile \"$TempDir/RandomBinary.dat\" -FileSize 10mb",
-      "SourceLinks": [
-      ]
-    },
-    {
-      "Id": "RandomText",
-      "Enabled": true,
-      "Label": "Random ASCII Text",
-      "Description": "This corpus is created as a single 10 megabyte file of pseudorandom ASCII text. This test was created to test the compression utilities in a \"worst case\" scenario of compressing completely random data.",
-      "Source": "New_RandomTextFile \"$TempDir/RandomTextBinary.dat\" -FileSize 10mb",
-      "SourceLinks": [
       ]
     },
     {
       "Id": "jquery",
-      "Enabled": true,
       "Label": "jQuery",
       "Description": "This corpus is composed of current source code for the popular javascript library jQuery. It was chosen as an example of a large repository of computer source code in order to test how the utilities handle somewhat structured data.",
       "Source": "$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\";\n git clone https://github.com/jquery/jquery.git $Source 2>$null;\n$_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force;\nreturn $Source;",
@@ -130,7 +143,6 @@
   "Compressors": [
     {
       "Id": "Compress-Archive",
-      "Enabled": false,
       "Description": "The <code>Compress-Archive</code> cmdlet uses the built in Windows zip compressor that is also used by Explorer when sending selections to compressed folders.",
       "Documentation": "https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.archive/compress-archive",
       "Extension": "zip",
@@ -182,7 +194,7 @@
       "Tests": [
         {
           "Id": "7ZipTarBz2",
-          "Label": "7zip tar.bz2 ",
+          "Label": "7zip tar.bz2",
           "Extension": "tar.bz2",
           "Arguments": [
             "-mx=9"
@@ -190,7 +202,7 @@
         },
         {
           "Id": "7ZipTarGz",
-          "Label": "7zip tar.Gz2 ",
+          "Label": "7zip tar.gz2",
           "Extension": "tar.gz",
           "Arguments": [
             "-mx=9"
@@ -198,7 +210,7 @@
         },
         {
           "Id": "7ZipTarxz",
-          "Label": "7zip tar.xz ",
+          "Label": "7zip tar.xz",
           "Extension": "tar.xz",
           "Arguments": [
             "-mx=9"

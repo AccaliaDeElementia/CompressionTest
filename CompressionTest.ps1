@@ -132,6 +132,7 @@ function Write_ResultsJSON {
     "Compression_Results_Loaded($ResultsText)" | Out-File "$Destination.jsonp"
 }
 
+#TODO: These two methods can probably be combined
 Function Get_CompressorTests{
     Param(
         $Configuration
@@ -153,6 +154,27 @@ Function Get_CompressorTests{
     return $Results
 }
 
+Function Get_Corpora{
+    Param(
+        $Configuration
+    )
+    $Results = @()
+    foreach ($Config in $Configuration.Corpora) {
+        if ($Config.SubCorpora -eq $null) {
+            $Results += $Config
+            continue
+        }
+        foreach ($Corpora in $Config.SubCorpora) {
+            $CorporaObject = $Config | Select-Object -Property * -ExcludeProperty SubCorpora
+            $Corpora.PsObject.Properties | % {
+                Add-Member -InputObject $CorporaObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
+            }
+            $Results += $CorporaObject
+        }
+    }
+    return $Results
+}
+
 $TestStart = Get-Date
 Write-Host "Compression Tests Starting at $TestStart"
 Write-Host
@@ -160,6 +182,7 @@ Write-Host
 try{
     $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
     $Compressors = Get_CompressorTests $Configuration
+	$Corpora = Get_Corpora $Configuration
 } catch {
     Write-Error "Failed to load test Configuration"
     Write-Debug $_
@@ -168,8 +191,8 @@ try{
 
 
 $Results = New-Object -TypeName PSObject
-foreach ($CorpusConfig in $Configuration.Corpuses) {
-    if ($CorpusConfig.Enabled -ne 'true') {
+foreach ($CorpusConfig in $Corpora) {
+    if ($CorpusConfig.Enabled -ne $null -and $CorpusConfig.Enabled -ne 'true') {
         Write-Host "Skipping Disabled $($CorpusConfig.Label) Corpus..."
         Write-Host
         continue
