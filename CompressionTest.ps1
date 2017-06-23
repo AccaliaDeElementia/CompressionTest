@@ -3,6 +3,7 @@ Import-Module ".\Utilities.psm1"
 # Create end results Directory
 $OutputDir = New-Item -Type Directory Results -Force
 $TempDir = New-Item -Type Directory "Temp_$([guid]::NewGuid().Guid)" -Force
+$FailedTests = $false
 
 function Calculate-Size {
     param(
@@ -100,6 +101,7 @@ function Run-CompressionSuite {
             Write-Error "An Error occured testing $($Compressor.Label)"
             Write-Debug $_
             $Target = $null
+            Set-Variable -Scope Script -Name FailedTests -Value $true
         }
         $env:Path = $EnvPath;
         Write-Host "$($Compressor.Label) in $($TimeData.TotalMilliseconds)"
@@ -151,8 +153,20 @@ Function Get_CompressorTests{
     return $Results
 }
 
-$Configuration = Get-Content .\configuration.json | ConvertFrom-Json
-$Compressors = Get_CompressorTests $Configuration
+$TestStart = Get-Date
+Write-Host "Compression Tests Starting at $TestStart"
+Write-Host
+
+try{
+    $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
+    $Compressors = Get_CompressorTests $Configuration
+} catch {
+    Write-Error "Failed to load test Configuration"
+    Write-Debug $_
+    Exit 1
+}
+
+
 $Results = New-Object -TypeName PSObject
 foreach ($CorpusConfig in $Configuration.Corpuses) {
     if ($CorpusConfig.Enabled -ne 'true') {
@@ -167,12 +181,33 @@ foreach ($CorpusConfig in $Configuration.Corpuses) {
     Write-Host
     Write-Host "Writing Results CSV for $($CorpusConfig.Label)"
     Write_ResultsCSV $Result $OutputDir "Results_$($CorpusConfig.Id)"
+}
+Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
 
-    Write-Host
+if ($FailedTests) {
+    Write-Error "Not all Test Compressors Succeeded, Test run Failed."
+    Exit 1
 }
 
+$TestComplete = Get-Date
+$TestRunTime = $TestComplete - $TestStart
+$BuildStats = New-Object -TypeName PSObject -Property @{
+    Start = $TestStart;
+    Complete = $TestComplete;
+    RunTime = $TestRunTime;
+    Id = $env:APPVEYOR_BUILD_ID;
+    Number = $env:APPVEYOR_BUILD_NUMBER;
+    Version = $env:APPVEYOR_BUILD_VERSION;
+    Commit = $env:APPVEYOR_REPO_COMMIT;
+    CommitAuthor = $env:APPVEYOR_REPO_COMMIT_AUTHOR;
+    CommitTimestamp = $env:APPVEYOR_REPO_COMMIT_TIMESTAMP;
+    CommitMessage = $env:APPVEYOR_REPO_COMMIT_MESSAGE;
+}
+Add-Member -InputObject $Configuration -NotePropertyName Build -NotePropertyValue $BuildStats
+Write-Host "Compression Tests completed at $TestComplete"
+Write-Host
+
 Write-Host "Writing Output JSON"
-Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
 Write_ResultsJSON $Configuration $OutputDir "TestResults"
 Write-Host
 
