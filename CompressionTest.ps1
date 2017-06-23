@@ -128,8 +128,8 @@ function Write_ResultsJSON {
     )
     $Destination = $OutputPath.FullName + "\$Filename"
     $ResultsText = $Results | ConvertTo-Json -Depth 50
-    $ResultsText | Out-File "$Destination.json"
-    "Compression_Results_Loaded($ResultsText)" | Out-File "$Destination.jsonp"
+    $ResultsText | Out-File -Encoding utf8 "$Destination.json"
+    "Compression_Results_Loaded($ResultsText)" | Out-File -Encoding utf8 "$Destination.jsonp"
 }
 
 #TODO: These two methods can probably be combined
@@ -180,7 +180,7 @@ Write-Host "Compression Tests Starting at $TestStart"
 Write-Host
 
 try{
-    $Configuration = Get-Content .\configuration.json | ConvertFrom-Json
+    $Configuration = Get-Content -Encoding utf8 .\configuration.json | ConvertFrom-Json
     $Compressors = Get_CompressorTests $Configuration
 	$Corpora = Get_Corpora $Configuration
 } catch {
