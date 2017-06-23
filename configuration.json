@@ -143,6 +143,7 @@
   "Compressors": [
     {
       "Id": "Compress-Archive",
+      "Label": "Compress-Archive",
       "Description": "The <code>Compress-Archive</code> cmdlet uses the built in Windows zip compressor that is also used by Explorer when sending selections to compressed folders.",
       "Documentation": "https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.archive/compress-archive",
       "Extension": "zip",
