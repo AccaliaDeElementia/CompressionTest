@@ -192,9 +192,9 @@ if ($FailedTests) {
 $TestComplete = Get-Date
 $TestRunTime = $TestComplete - $TestStart
 $BuildStats = New-Object -TypeName PSObject -Property @{
-    Start = $TestStart;
-    Complete = $TestComplete;
-    RunTime = $TestRunTime;
+    Start = $TestStart.ToUniversalTime().ToString("O");
+    Complete = $TestComplete.ToUniversalTime().ToString("O");
+    RunTime = $TestRunTime.TotalMilliseconds;
     Id = $env:APPVEYOR_BUILD_ID;
     Number = $env:APPVEYOR_BUILD_NUMBER;
     Version = $env:APPVEYOR_BUILD_VERSION;
