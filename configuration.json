@@ -138,6 +138,30 @@
       "Source": "$Source = New-Item -ItemType Directory \"$TempDir/jquery_source\";\n git clone https://github.com/jquery/jquery.git $Source 2>$null;\n$_ = Remove-Item \"$($Source.FullName)/.git\" -Recurse -Force;\nreturn $Source;",
       "SourceLinks": [
       ]
+    },
+    {
+      "Id": "nasa",
+      "Enabled": true,
+      "Label": "Images",
+      "Description": "This corpus is composed of images from NASA and are designed to test compression algorithms against different image formats",
+      "SourceLinks": [
+        {
+          "Label": "The Omega Nebula, STScI-2002-11",
+          "Link": "http://hubblesite.org/image/1186/news_release/2002-11"
+        },
+        {
+          "Label": "The Hubble Deep Field, STScI-1996-01",
+          "Link": "http://hubblesite.org/image/388/news_release/1996-01"
+        }
+      ],
+      "SubCorpora": [
+        {
+          "Id": "ImageTiff",
+          "Label": "Tiff Formatted Images",
+          "Description": "This corpus is comprised of several TIFF formatted images",
+          "Source": "Get-Item -Path ./ImageCorpus"
+        }
+      ]
     }
   ],
   "Compressors": [
