@@ -140,7 +140,9 @@ Function Get_CompressorTests{
     $Results = @()
     foreach ($Config in $Configuration.Compressors) {
         if ($Config.Tests -eq $null) {
-            $Results += $Config
+            if ($env:FilterCompressor -eq $null -or $env:FilterCompressor -eq $Config.Id) {
+                $Results += $Config
+            }
             continue
         }
         foreach ($Test in $Config.Tests) {
@@ -148,7 +150,9 @@ Function Get_CompressorTests{
             $Test.PsObject.Properties | % {
                 Add-Member -InputObject $TestObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
             }
-            $Results += $TestObject
+            if ($env:FilterCompressor -eq $null -or $env:FilterCompressor -eq $TestObject.Id) {
+                $Results += $TestObject
+            }
         }
     }
     return $Results
@@ -161,7 +165,9 @@ Function Get_Corpora{
     $Results = @()
     foreach ($Config in $Configuration.Corpora) {
         if ($Config.SubCorpora -eq $null) {
-            $Results += $Config
+            if ($env:FilterCorpora -eq $null -or $env:FilterCorpora -eq $Config.Id) {
+                $Results += $Config
+            }
             continue
         }
         foreach ($Corpora in $Config.SubCorpora) {
@@ -169,7 +175,9 @@ Function Get_Corpora{
             $Corpora.PsObject.Properties | % {
                 Add-Member -InputObject $CorporaObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
             }
-            $Results += $CorporaObject
+            if ($env:FilterCorpora -eq $null -or $env:FilterCorpora -eq $CorporaObject.Id) {
+                $Results += $CorporaObject
+            }
         }
     }
     return $Results
@@ -188,7 +196,6 @@ try{
     Write-Debug $_
     Exit 1
 }
-
 
 $Results = New-Object -TypeName PSObject
 foreach ($CorpusConfig in $Corpora) {
