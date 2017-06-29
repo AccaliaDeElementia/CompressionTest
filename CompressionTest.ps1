@@ -87,7 +87,7 @@ function Run-CompressionSuite {
             continue;
         }
         $Source = $SourceItem.FullName
-        $Target = "$($TempDir.Fullname)/$([guid]::NewGuid().Guid).$($Compressor.Extension)"
+        $Target = "$($TempDir.Fullname)/$($CorpusConfig.Id)_$($Compressor.Id).$($Compressor.Extension)"
         
         $Arguments = $Compressor.Arguments
 
@@ -211,6 +211,7 @@ foreach ($CorpusConfig in $Corpora) {
     Write-Host
     Write-Host "Writing Results CSV for $($CorpusConfig.Label)"
     Write_ResultsCSV $Result $OutputDir "Results_$($CorpusConfig.Id)"
+	Write-Host
 }
 Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
 
