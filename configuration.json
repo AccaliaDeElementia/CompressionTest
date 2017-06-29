@@ -160,6 +160,11 @@
           "Label": "Tiff Formatted Images",
           "Description": "This corpus is comprised of several TIFF formatted images",
           "Source": "Get-Item -Path ./ImageCorpus"
+        },{
+          "Id": "ImageBmp",
+          "Label": "Bitmap Formatted Images",
+          "Description": "This corpus is comprised of several BMP formatted images",
+          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = \"$TempDir/BMPCorpus\";\n$Corpus = New-Item -ItemType Directory $Corpus;\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name)\", \"BMP\");\n};\nGet-Item -Path $Corpus"
         }
       ]
     }
