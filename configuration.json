@@ -239,7 +239,7 @@
       "Extension": "7z",
       "SourceLink": "http://www.7-zip.org/",
       "Path": "C:/Program Files/7-Zip",
-      "Command": "7z.exe a -ttar -so archive.tar $Source | 7z.exe a -si @($Arguments) $Target",
+      "Command": "7z.exe a -ttar archive.tar $Source; 7z.exe a @($Arguments) $Target archive.tar; Remove-Item archive.tar",
       "Tests": [
         {
           "Id": "7ZipTarBz2",
