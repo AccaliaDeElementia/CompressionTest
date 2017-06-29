@@ -160,11 +160,30 @@
           "Label": "Tiff Formatted Images",
           "Description": "This corpus is comprised of several TIFF formatted images",
           "Source": "Get-Item -Path ./ImageCorpus"
-        },{
+        },
+        {
           "Id": "ImageBmp",
           "Label": "Bitmap Formatted Images",
           "Description": "This corpus is comprised of several BMP formatted images",
-          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = \"$TempDir/BMPCorpus\";\n$Corpus = New-Item -ItemType Directory $Corpus;\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name)\", \"BMP\");\n};\nGet-Item -Path $Corpus"
+          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = New-Item -ItemType Directory \"$TempDir/BMPCorpus\";\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name).bmp\", \"BMP\");\n};\nGet-Item -Path $Corpus"
+        },
+        {
+          "Id": "ImageGif",
+          "Label": "GIF Formatted Images",
+          "Description": "This corpus is comprised of several GIF formatted images",
+          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = New-Item -ItemType Directory \"$TempDir/GIFCorpus\";\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name).gif\", \"GIF\");\n};\nGet-Item -Path $Corpus"
+        },
+        {
+          "Id": "ImageJpeg",
+          "Label": "JPEG Formatted Images",
+          "Description": "This corpus is comprised of several JPEG formatted images",
+          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = New-Item -ItemType Directory \"$TempDir/JPEGCorpus\";\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name).jpg\", \"JPEG\");\n};\nGet-Item -Path $Corpus"
+        },
+        {
+          "Id": "ImagePng",
+          "Label": "PNG Formatted Images",
+          "Description": "This corpus is comprised of several PNG formatted images",
+          "Source": "$assem=[Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n$Corpus = New-Item -ItemType Directory \"$TempDir/PNGCorpus\";\nforeach($tiff in Get-ChildItem -Recurse -Filter *.tiff ./ImageCorpus) {\n\t$img = New-Object System.Drawing.Bitmap $tiff.FullName;\n\t$img.Save(\"$($Corpus.FullName)/$($tiff.Name).png\", \"PNG\");\n};\nGet-Item -Path $Corpus"
         }
       ]
     }
