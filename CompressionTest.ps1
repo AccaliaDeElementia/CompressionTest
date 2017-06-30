@@ -1,16 +1,17 @@
 Param(
-	$SelectCorpora = '*',
-	$SelectCompressors = '*'
+	[string]$SelectCorpora = '*',
+	[string]$SelectCompressors = '*',
+	[switch]$IncludeDisabled
 )
 
 if ($SelectCorpora -eq '*'){
-	$SelectCorpora = $null
+	$SelectCorpora = @()
 } else {
 	$SelectCorpora = $SelectCorpora -split ','
 }
 
 if ($SelectCompressors -eq '*'){
-	$SelectCompressors = $null
+	$SelectCompressors = @()
 } else {
 	$SelectCompressors = $SelectCompressors -split ','
 }
@@ -153,25 +154,29 @@ Function Get_TestSetup{
     Param(
         $Setup,
 		$SubTests,
-		$Filter
+		$Filter,
+		$IncludeDisabled
     )
-	Write-Host $Filter
     $Results = @()
     foreach ($Config in $Setup) {
         if ($Config."$SubTests" -eq $null) {
-			Write-Host $Filter $Config.Id ($Filter -contains $Config.Id)
-            if ($Filter -contains $Config.Id) {
+			if ($Config.Disabled -and -not $IncludeDisabled) {
+				continue;
+			}
+			if ($Filter.Length -le 0 -or $Filter -contains $Config.Id) {
                 $Results += $Config
             }
-            continue
+            continue;
         }
         foreach ($Test in $Config."$SubTests") {
             $TestObject = $Config | Select-Object -Property * -ExcludeProperty $SubTests
             $Test.PsObject.Properties | % {
                 Add-Member -InputObject $TestObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
             }
-            Write-Host $Filter $TestObject.Id ($Filter -contains $TestObject.Id)
-			if ($Filter -contains $TestObject.Id) {
+			if ($TestObject.Disabled -and -not $IncludeDisabled) {
+				continue;
+			}
+     		if ($Filter.Length -le 0 -or $Filter -contains $TestObject.Id) {
                 $Results += $TestObject
             }
         }
@@ -183,10 +188,10 @@ $TestStart = Get-Date
 Write-Host "Compression Tests Starting at $TestStart"
 Write-Host
 
-try{
+try {
     $Configuration = Get-Content -Encoding utf8 .\configuration.json | ConvertFrom-Json
-    $Compressors = Get_TestSetup -Setup $Configuration.Compressors -SubTests "Tests" -Filter $SelectCompressors
-	$Corpora = Get_TestSetup -Setup $Configuration.Corpora -SubTests "SubCorpora" -Filter $SelectCorpora
+    $Compressors = Get_TestSetup -Setup $Configuration.Compressors -SubTests "Tests" -Filter $SelectCompressors -IncludeDisabled $IncludeDisabled
+	$Corpora = Get_TestSetup -Setup $Configuration.Corpora -SubTests "SubCorpora" -Filter $SelectCorpora -IncludeDisabled $IncludeDisabled
 } catch {
     Write-Error "Failed to load test Configuration"
     Write-Debug $_
@@ -209,6 +214,9 @@ foreach ($CorpusConfig in $Corpora) {
     Write-Host
 }
 Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
+
+Write-Host "Performing Cleanup"
+Remove-Item -Recurse -Force $TempDir
 
 if ($FailedTests) {
     Write-Error "Not all Test Compressors Succeeded, Test run Failed."
@@ -236,8 +244,5 @@ Write-Host
 Write-Host "Writing Output JSON"
 Write_ResultsJSON $Configuration $OutputDir "TestResults"
 Write-Host
-
-Write-Host "Performing Cleanup"
-Remove-Item -Recurse -Force $TempDir
 
 Write-Host "Done" 

@@ -209,8 +209,8 @@
       "Command": "7z.exe a @($Arguments) $Target $Source",
       "Tests": [
         {
-          "Id": "7zMaximumCompressionCom",
-          "Label": "7zip MaximumCompression.com Best Switches",
+          "Id": "7zCustom",
+          "Label": "7zip Custom Switches",
           "Arguments": [
             "-m0=ppmd:o=20:mem=26"
           ]
@@ -251,14 +251,14 @@
         },
         {
           "Id": "7ZipTarGz",
-          "Label": "7zip tar.gz2",
+          "Label": "7zip tar.gz",
           "Extension": "tar.gz",
           "Arguments": [
             "-mx=9"
           ]
         },
         {
-          "Id": "7ZipTarxz",
+          "Id": "7ZipTarXz",
           "Label": "7zip tar.xz",
           "Extension": "tar.xz",
           "Arguments": [
@@ -278,8 +278,8 @@
       "SourceLink": "http://www.rarlab.com/",
       "Tests": [
         {
-          "Id": "WinRARMaximumCompressionCom",
-          "Label": "WinRAR MaximumCompression.com Best Switches",
+          "Id": "WinRARCustom",
+          "Label": "WinRAR Custom Switches",
           "Arguments": [
             "-ep",
             "-m5",
@@ -309,6 +309,7 @@
       "SourceLink": "https://www.cygwin.com/",
       "Extension": "tar.bz2",
       "Path": "C:/cygwin64/bin",
+      "Disabled":"These tests are currently disabled as 7Zip includes tests for these formats that run in significantly less time and produce similar results. You can run these tests by passing the <codde>-IncludeDisabled</code> switch to the test script.",
       "Tests": [
         {
           "Id": "PosixGzipMaximum",
