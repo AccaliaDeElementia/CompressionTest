@@ -1,3 +1,20 @@
+Param(
+	$SelectCorpora = '*',
+	$SelectCompressors = '*'
+)
+
+if ($SelectCorpora -eq '*'){
+	$SelectCorpora = $null
+} else {
+	$SelectCorpora = $SelectCorpora -split ','
+}
+
+if ($SelectCompressors -eq '*'){
+	$SelectCompressors = $null
+} else {
+	$SelectCompressors = $SelectCompressors -split ','
+}
+
 Import-Module ".\Utilities.psm1"
 
 # Create end results Directory
@@ -132,51 +149,30 @@ function Write_ResultsJSON {
     "Compression_Results_Loaded($ResultsText)" | Out-File -Encoding utf8 "$Destination.jsonp"
 }
 
-#TODO: These two methods can probably be combined
-Function Get_CompressorTests{
+Function Get_TestSetup{
     Param(
-        $Configuration
+        $Setup,
+		$SubTests,
+		$Filter
     )
+	Write-Host $Filter
     $Results = @()
-    foreach ($Config in $Configuration.Compressors) {
-        if ($Config.Tests -eq $null) {
-            if ($env:FilterCompressor -eq $null -or $env:FilterCompressor -eq $Config.Id) {
+    foreach ($Config in $Setup) {
+        if ($Config."$SubTests" -eq $null) {
+			Write-Host $Filter $Config.Id ($Filter -contains $Config.Id)
+            if ($Filter -contains $Config.Id) {
                 $Results += $Config
             }
             continue
         }
-        foreach ($Test in $Config.Tests) {
-            $TestObject = $Config | Select-Object -Property * -ExcludeProperty Tests
+        foreach ($Test in $Config."$SubTests") {
+            $TestObject = $Config | Select-Object -Property * -ExcludeProperty $SubTests
             $Test.PsObject.Properties | % {
                 Add-Member -InputObject $TestObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
             }
-            if ($env:FilterCompressor -eq $null -or $env:FilterCompressor -eq $TestObject.Id) {
+            Write-Host $Filter $TestObject.Id ($Filter -contains $TestObject.Id)
+			if ($Filter -contains $TestObject.Id) {
                 $Results += $TestObject
-            }
-        }
-    }
-    return $Results
-}
-
-Function Get_Corpora{
-    Param(
-        $Configuration
-    )
-    $Results = @()
-    foreach ($Config in $Configuration.Corpora) {
-        if ($Config.SubCorpora -eq $null) {
-            if ($env:FilterCorpora -eq $null -or $env:FilterCorpora -eq $Config.Id) {
-                $Results += $Config
-            }
-            continue
-        }
-        foreach ($Corpora in $Config.SubCorpora) {
-            $CorporaObject = $Config | Select-Object -Property * -ExcludeProperty SubCorpora
-            $Corpora.PsObject.Properties | % {
-                Add-Member -InputObject $CorporaObject -MemberType NoteProperty -Name $_.Name -Value $_.Value -Force
-            }
-            if ($env:FilterCorpora -eq $null -or $env:FilterCorpora -eq $CorporaObject.Id) {
-                $Results += $CorporaObject
             }
         }
     }
@@ -189,8 +185,8 @@ Write-Host
 
 try{
     $Configuration = Get-Content -Encoding utf8 .\configuration.json | ConvertFrom-Json
-    $Compressors = Get_CompressorTests $Configuration
-	$Corpora = Get_Corpora $Configuration
+    $Compressors = Get_TestSetup -Setup $Configuration.Compressors -SubTests "Tests" -Filter $SelectCompressors
+	$Corpora = Get_TestSetup -Setup $Configuration.Corpora -SubTests "SubCorpora" -Filter $SelectCorpora
 } catch {
     Write-Error "Failed to load test Configuration"
     Write-Debug $_
@@ -208,10 +204,9 @@ foreach ($CorpusConfig in $Corpora) {
     $Result = Run-CompressionSuite $CorpusConfig $Compressors
     Add-Member -InputObject $Results -NotePropertyName $CorpusConfig.Id -NotePropertyValue $Result
 
-    Write-Host
     Write-Host "Writing Results CSV for $($CorpusConfig.Label)"
     Write_ResultsCSV $Result $OutputDir "Results_$($CorpusConfig.Id)"
-	Write-Host
+    Write-Host
 }
 Add-Member -InputObject $Configuration -NotePropertyName Results -NotePropertyValue $Results
 
